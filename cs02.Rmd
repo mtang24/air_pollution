@@ -44,6 +44,7 @@ pm <- read_csv("data/pm25_data.csv")
 
 
 ```{r}
+# Vivian's EDA
 # Creating a new column based on the placement of the monitor relative to the 40 degree latitude line
 pm <- pm |>
   mutate(n_or_s = case_when(

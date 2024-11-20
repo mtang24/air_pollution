@@ -16,13 +16,16 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
 ## Questions
-
+- With what accuracy can we predict US annual average air pollution concentrations?
+- Extension question
 
 ### Load packages
 
 ```{r load-packages, message=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(olsrr)
 ```
-
 
 ## The Data
 
@@ -30,7 +33,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ### Data Import
 
 ```{r}
-
+pm <- read_csv("data/pm25_data.csv")
 ```
 
 ### Data Wrangling

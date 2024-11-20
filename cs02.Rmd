@@ -1,6 +1,6 @@
 ---
 title: "CS02 - Predicting Annual Air Pollution"
-author: "Unknown"
+author: "Michael Tang, Vivian Lee, Jennifer Kim, Madeleine Jimenez, and Sean Pao"
 output: 
   html_document:
     toc: true

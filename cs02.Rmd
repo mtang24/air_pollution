@@ -226,18 +226,18 @@ plot_popdens_county
 
 ```{r}
 # Maddy's EDA
-pm_data <- pm_data |> 
+pm <- pm |> 
   mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
 
-ggplot(pm_data, aes(x = pop_density_cluster, y = value)) +
+ggplot(pm, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "pink") +
   labs(title = "PM2.5 Levels by Population Density Clusters",
        x = "Population Density Cluster",
        y = "PM2.5 Levels")
 
 
-ggplot(pm_data, aes(x = pop_density_cluster, y = value)) +
+ggplot(pm, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "green") + facet_wrap(~state) +
   labs(title = "PM2.5 Levels by Population Density Clusters and State",
        x = "Population Density Cluster",
@@ -378,19 +378,19 @@ pm_full <-  lin_mod |>
   fit(value ~ ., data=pm)
 
 # Display adj. R-squared
-glance(pm_full)$adj.r.squared # Displays wrong value currently?
+#glance(pm_full)$adj.r.squared # Displays wrong value currently?
 ```
 
 ```{r}
 # Backward selection: fit model with a few columns
-mod <- lm(value ~ log_pri_length_25000 + log_prisec_length_15000 +
-          log_nei_2008_pm25_sum_15000 , data=pm)
-ols_step_backward_p(mod)
+# mod <- lm(value ~ log_pri_length_25000 + log_prisec_length_15000 +
+#           log_nei_2008_pm25_sum_15000 , data=pm)
+# ols_step_backward_p(mod)
 ```
 
 ```{r}
 # Backward selection: fit full model
-mod_full <- lm(value ~ ., data=pm)
+#mod_full <- lm(value ~ ., data=pm)
 # ols_step_backward_p(mod_full) # error running
 ```
 

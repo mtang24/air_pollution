@@ -227,6 +227,49 @@ plot_popdens_county <- {
 plot_popdens_county
 ```
 
+```{r}
+# Maddy's EDA
+pm_data <- pm_data |> 
+  mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
+
+
+ggplot(pm_data, aes(x = pop_density_cluster, y = value)) +
+  geom_boxplot(fill = "pink") +
+  labs(title = "PM2.5 Levels by Population Density Clusters",
+       x = "Population Density Cluster",
+       y = "PM2.5 Levels")
+
+
+ggplot(pm_data, aes(x = pop_density_cluster, y = value)) +
+  geom_boxplot(fill = "green") + facet_wrap(~state) +
+  labs(title = "PM2.5 Levels by Population Density Clusters and State",
+       x = "Population Density Cluster",
+       y = "PM2.5 Levels")
+```
+
+EDA Visualizations
+
+```{r}
+# imp
+select(pm, contains("imp")) |>
+  GGally::ggpairs()
+```
+
+```{r}
+# pri
+select(pm, contains("pri")) |>
+  GGally::ggcorr(hjust = .85, size = 3,
+       layout.exp=2, label = TRUE)
+```
+
+```{r}
+# nei with population density 
+pm |>
+select(log_nei_2008_pm25_sum_10000, popdens_county, 
+       log_pri_length_10000, imp_a10000, county_pop) |>
+  GGally::ggpairs()
+```
+
 ## Analysis
 
 ```{r}

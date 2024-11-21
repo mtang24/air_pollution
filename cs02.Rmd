@@ -230,7 +230,72 @@ plot_popdens_county
 ## Analysis
 
 ```{r}
+linear_reg()
 
+lin_mod <- linear_reg() |>
+  set_engine("lm") # lm: linear model
+
+# fit model
+mod_cmaq_value <- lin_mod |>
+  fit(value ~ CMAQ, data = pm) 
+
+# display results
+mod_cmaq_value |>
+  tidy()
+```
+
+```{r}
+pm <- pm |> 
+  mutate(popdens = case_when(
+    popdens_zcta >= median(pm$popdens_zcta) ~ "hi",
+    popdens_zcta < median(pm$popdens_zcta) ~ "low"          
+  ))
+
+# Fit model with main effects
+pm_main_fit <- lin_mod |>
+  fit(value ~ CMAQ + popdens, data = pm)
+
+pm_main_fit |> tidy()
+
+# Display model
+pm_main_fit |>
+  tidy() |> 
+  mutate(exp_estimate = exp(estimate)) |>
+  select(term, estimate, exp_estimate)
+
+# Display adj. R-squared
+glance(pm_main_fit)$adj.r.squared
+```
+
+```{r}
+# Fit model with interaction effects
+pm_int_fit <- lin_mod |>
+  fit(value ~ CMAQ * popdens, data = pm)
+
+# Display adj. R-squared
+glance(pm_int_fit)$adj.r.squared
+```
+
+```{r}
+# Fit full model using tidymodels
+pm_full <-  lin_mod |>
+  fit(value ~ ., data=pm)
+
+# Display adj. R-squared
+glance(pm_full)$adj.r.squared # Displays wrong value currently?
+```
+
+```{r}
+# Backward selection: fit model with a few columns
+mod <- lm(value ~ log_pri_length_25000 + log_prisec_length_15000 +
+          log_nei_2008_pm25_sum_15000 , data=pm)
+ols_step_backward_p(mod)
+```
+
+```{r}
+# Backward selection: fit full model
+mod_full <- lm(value ~ ., data=pm)
+# ols_step_backward_p(mod_full) # error running
 ```
 
 

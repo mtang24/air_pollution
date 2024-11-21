@@ -1960,6 +1960,122 @@ satellite
 </div>
 <div id="analysis" class="section level2">
 <h2>Analysis</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">linear_reg</span>()</span></code></pre></div>
+<pre><code>## Linear Regression Model Specification (regression)
+## 
+## Computational engine: lm</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>lin_mod <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;lm&quot;</span>) <span class="co"># lm: linear model</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co"># fit model</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>mod_cmaq_value <span class="ot">&lt;-</span> lin_mod <span class="sc">|&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="fu">fit</span>(value <span class="sc">~</span> CMAQ, <span class="at">data =</span> pm) </span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co"># display results</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>mod_cmaq_value <span class="sc">|&gt;</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>  <span class="fu">tidy</span>()</span></code></pre></div>
+<pre><code>## # A tibble: 2 × 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)    7.40     0.232       31.9 1.81e-148
+## 2 CMAQ           0.405    0.0260      15.6 1.83e- 48</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>pm <span class="ot">&lt;-</span> pm <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">popdens =</span> <span class="fu">case_when</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>    popdens_zcta <span class="sc">&gt;=</span> <span class="fu">median</span>(pm<span class="sc">$</span>popdens_zcta) <span class="sc">~</span> <span class="st">&quot;hi&quot;</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>    popdens_zcta <span class="sc">&lt;</span> <span class="fu">median</span>(pm<span class="sc">$</span>popdens_zcta) <span class="sc">~</span> <span class="st">&quot;low&quot;</span>          </span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  ))</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co"># Fit model with main effects</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>pm_main_fit <span class="ot">&lt;-</span> lin_mod <span class="sc">|&gt;</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>  <span class="fu">fit</span>(value <span class="sc">~</span> CMAQ <span class="sc">+</span> popdens, <span class="at">data =</span> pm)</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>pm_main_fit <span class="sc">|&gt;</span> <span class="fu">tidy</span>()</span></code></pre></div>
+<pre><code>## # A tibble: 3 × 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)    7.70     0.272      28.3  1.02e-125
+## 2 CMAQ           0.389    0.0270     14.4  1.89e- 42
+## 3 popdenslow    -0.345    0.160      -2.15 3.17e-  2</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Display model</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>pm_main_fit <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">exp_estimate =</span> <span class="fu">exp</span>(estimate)) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  <span class="fu">select</span>(term, estimate, exp_estimate)</span></code></pre></div>
+<pre><code>## # A tibble: 3 × 3
+##   term        estimate exp_estimate
+##   &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+## 1 (Intercept)    7.70      2217.   
+## 2 CMAQ           0.389        1.48 
+## 3 popdenslow    -0.345        0.708</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Display adj. R-squared</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">glance</span>(pm_main_fit)<span class="sc">$</span>adj.r.squared</span></code></pre></div>
+<pre><code>## [1] 0.21964</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Fit model with interaction effects</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>pm_int_fit <span class="ot">&lt;-</span> lin_mod <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  <span class="fu">fit</span>(value <span class="sc">~</span> CMAQ <span class="sc">*</span> popdens, <span class="at">data =</span> pm)</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="co"># Display adj. R-squared</span></span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="fu">glance</span>(pm_int_fit)<span class="sc">$</span>adj.r.squared</span></code></pre></div>
+<pre><code>## [1] 0.2239676</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># Fit full model using tidymodels</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>pm_full <span class="ot">&lt;-</span>  lin_mod <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  <span class="fu">fit</span>(value <span class="sc">~</span> ., <span class="at">data=</span>pm)</span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="co"># Display adj. R-squared</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="fu">glance</span>(pm_full)<span class="sc">$</span>adj.r.squared</span></code></pre></div>
+<pre><code>## [1] NaN</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># Backward selection: fit model with a few columns</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(value <span class="sc">~</span> log_pri_length_25000 <span class="sc">+</span> log_prisec_length_15000 <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>          log_nei_2008_pm25_sum_15000 , <span class="at">data=</span>pm)</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="fu">ols_step_backward_p</span>(mod)</span></code></pre></div>
+<pre><code>## 
+## 
+##                                     Stepwise Summary                                    
+## --------------------------------------------------------------------------------------
+## Step    Variable                  AIC         SBC         SBIC        R2       Adj. R2 
+## --------------------------------------------------------------------------------------
+##  0      Full Model              3999.825    4023.702    1513.882    0.16469    0.16181 
+##  1      log_pri_length_25000    3998.190    4017.291    1512.234    0.16434    0.16242 
+## --------------------------------------------------------------------------------------
+## 
+## Final Model Output 
+## ------------------
+## 
+##                          Model Summary                           
+## ----------------------------------------------------------------
+## R                       0.405       RMSE                  2.360 
+## R-Squared               0.164       MSE                   5.569 
+## Adj. R-Squared          0.162       Coef. Var            21.871 
+## Pred R-Squared          0.158       AIC                3998.190 
+## MAE                     1.735       SBC                4017.291 
+## ----------------------------------------------------------------
+##  RMSE: Root Mean Square Error 
+##  MSE: Mean Square Error 
+##  MAE: Mean Absolute Error 
+##  AIC: Akaike Information Criteria 
+##  SBC: Schwarz Bayesian Criteria 
+## 
+##                                 ANOVA                                 
+## ---------------------------------------------------------------------
+##                 Sum of                                               
+##                Squares         DF    Mean Square      F         Sig. 
+## ---------------------------------------------------------------------
+## Regression     959.301          2        479.650    85.841    0.0000 
+## Residual      4878.046        873          5.588                     
+## Total         5837.347        875                                    
+## ---------------------------------------------------------------------
+## 
+##                                           Parameter Estimates                                           
+## -------------------------------------------------------------------------------------------------------
+##                       model      Beta    Std. Error    Std. Beta      t        Sig      lower    upper 
+## -------------------------------------------------------------------------------------------------------
+##                 (Intercept)    -0.804         1.588                 -0.506    0.613    -3.920    2.312 
+##     log_prisec_length_15000     0.789         0.129        0.221     6.133    0.000     0.537    1.042 
+## log_nei_2008_pm25_sum_15000     0.281         0.041        0.245     6.802    0.000     0.200    0.363 
+## -------------------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># Backward selection: fit full model</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>mod_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(value <span class="sc">~</span> ., <span class="at">data=</span>pm)</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="co"># ols_step_backward_p(mod_full) # error running</span></span></code></pre></div>
 </div>
 <div id="results-discussion" class="section level2">
 <h2>Results &amp; Discussion</h2>

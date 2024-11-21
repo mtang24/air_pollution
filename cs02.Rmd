@@ -109,6 +109,44 @@ pm <- read_csv("data/pm25_data.csv")
 
 ```
 
+
+```{r}
+# Vivian's EDA
+# Creating a new column based on the placement of the monitor relative to the 40 degree latitude line
+pm <- pm |>
+  mutate(n_or_s = case_when(
+    lat >= 40 ~ "north",
+    lat < 40 ~ "south"
+  ))
+pm %>% 
+  ggplot(aes(y = CMAQ, x = n_or_s)) +
+  geom_boxplot()
+
+# Creating a new column based on the placement of the monitor relative to the 100 degree longitude line
+pm <- pm |>
+  mutate(e_or_w = case_when(
+    lon >= -100 ~ "east",
+    lon < -100 ~ "west"
+  ))
+pm %>% 
+  ggplot(aes(y = CMAQ, x = e_or_w)) +
+  geom_boxplot()
+
+# Creating a new column based on the quadrant of the US the monitor is in
+pm <- pm |>
+  mutate(quadrant = case_when(
+    lon >= -100 & lat >= 40 ~ "northeast",
+    lon >= -100 & lat < 40 ~ "southeast",
+    lon < -100 & lat >= 40 ~ "northwest",
+    lon < -100 & lat < 40 ~ "southwest"
+  ))
+pm %>% 
+  ggplot(aes(y = CMAQ, x = quadrant)) +
+  geom_boxplot()
+```
+
+
+
 ## Analysis
 
 ```{r}

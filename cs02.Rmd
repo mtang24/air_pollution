@@ -1,6 +1,6 @@
 ---
 title: "CS02 - Predicting Annual Air Pollution"
-author: "Michael Tang, Vivian Lee, Jennifer Kim, Madeleine Jimenez, and Sean Pao"
+author: "Michael Tang, Vivian Lee, Jennifer Kim, Madeleine Jimenez, and Hsiang-An Pao"
 output: 
   html_document:
     toc: true
@@ -19,8 +19,9 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
 ## Questions
-- With what accuracy can we predict US annual average air pollution concentrations?
-- Extension question
+
+-   With what accuracy can we predict US annual average air pollution concentrations?
+-   Extension question
 
 ### Load packages
 
@@ -36,70 +37,69 @@ Our data comes from the US Environmental Protection Agency (EPA), the National A
 
 It contains 48 features (variables) with values for each of the 876 monitors (observations).
 
-&nbsp;
+ 
 
 ##### The features are:
 
- - **id** | Monitor number
-   - The county number is indicated before the decimal and the monitor number is indicated after the decimal  
-   - Example: 1073.0023 is Jefferson county (1073) and .0023 one of 8 monitors
- - **fips** | Federal information processing standard number for the county where the monitor is located
-   - 5 digit id code for counties (zero is often the first value and sometimes is not shown)
-   - First two numbers indicate the state, last three numbers indicate the county 
-   - Example: Alabama’s state code is 01 because it is first alphabetically
-   - Note: Alaska and Hawaii are not included because they are not part of the contiguous US
- - **Lat** | Latitude of the monitor in degrees
- - **Lon** | Longitude of the monitor in degrees
- - **state** | State where the monitor is located
- - **county** | County where the monitor is located
- - **city** | City where the monitor is located
- - **CMAQ** | Estimated values of air pollution from a computational model called [Community Multiscale Air Quality (CMAQ)](https://www.epa.gov/cmaq)
-   - A monitoring system that simulates the physics of the atmosphere using chemistry and weather data to predict the air pollution
-   - Data from EPA
- - **zcta** | [Zip Code Tabulation Area](https://en.wikipedia.org/wiki/ZIP_Code_Tabulation_Area) where the monitor is located
-   - Postal Zip codes are converted into “generalized areal representations” that are non-overlapping
-   - Data from the 2010 Census
- - **zcta_area** | Land area of the zip code area in meters squared
-   - Data from the 2010 Census
- - **zcta_pop** | Population in the zip code area
-   - Data from the 2010 Census
- - **imp_a500, imp_a1000, imp_a5000, imp_a10000, imp_a15000** | Impervious surface measure
-   - Impervious surface are roads, concrete, parking lots, buildings
-   - Measured within a circle with a radius of 500, 1000, 5000, 10000, and 15000 meters respectively around the monitor
- - **county_area** | Land area of the county of the monitor in meters squared
- - **county_pop** | Population of the county of the monitor
- - **Log_dist_to_prisec** | Log (Natural log) distance to a primary or secondary road from the monitor
-   - Highway or major road
- - **log_pri_length_5000, log_pri_length_10000, log_pri_length_15000, log_pri_length_25000** | Count of primary road length in meters in a circle with a radius of 5000, 10000, 15000, and 25000 meters respectively around the monitor (Natural log)
-   - Highways only
- - **log_prisec_length_500, log_prisec_length_1000, log_prisec_length_5000, log_prisec_length_10000, log_prisec_length_15000, log_prisec_length_25000** | Count of primary and secondary road length in meters in a circle with a radius of 500, 1000, 5000, 10000, 15000, 25000 meters around the monitor (Natural log)
-   - Highway and secondary roads
- - **log_nei_2008_pm25_sum_10000, log_nei_2008_pm25_sum_15000, log_nei_2008_pm25_sum_25000** | Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
-   - Fine Particulate Matter (diameter 2.5 µm) 
- - **log_nei_2008_pm10_sum_10000, log_nei_2008_pm10_sum_15000, log_nei_2008_pm10_sum_25000** | Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
-   - Large Coarse Particulate Matter (diameter 10 µm) 
- - **popdens_county** | Population density (number of people per kilometer squared area of the county)
- - **popdens_zcta** | Population density (number of people per kilometer squared area of zcta)
- - From the Census:
-   - **nohs** | Percentage of people in zcta area where the monitor is that do not have a high school degree
-   - **somehs** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
-   - **hs** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree
-   - **somecollege** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
-   - **associate** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing an associate degree
-   - **bachelor** |  Percentage of people in zcta area where the monitor whose highest formal educational attainment was a bachelor’s degree
-   - **grad** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was a graduate degree
-   - **pov** | Percentage of people in zcta area where the monitor is that lived in [poverty](https://aspe.hhs.gov/2008-hhs-poverty-guidelines) in 2008
- - **hs_orless** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of nohs, somehs, and hs)
- - **urc2013, urc2006** | [2013](https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf), [2006 Urban-rural classification](https://www.cdc.gov/nchs/data/series/sr_02/sr02_154.pdf) of the county where the monitor is located
-   - 6 category variable - 1 is totally urban 6 is completely rural
-   - Data from the [National Center for Health Statistics](https://www.cdc.gov/nchs/index.htm)
- - **aod** | Aerosol Optical Depth measurement from a NASA satellite
-   - Based on the diffraction of a laser
-   - Used as a proxy of particulate pollution
-   - Unit-less - higher value indicates more pollution
-   - Data from NASA
-   
-   
+-   **id** \| Monitor number
+    -   The county number is indicated before the decimal and the monitor number is indicated after the decimal\
+    -   Example: 1073.0023 is Jefferson county (1073) and .0023 one of 8 monitors
+-   **fips** \| Federal information processing standard number for the county where the monitor is located
+    -   5 digit id code for counties (zero is often the first value and sometimes is not shown)
+    -   First two numbers indicate the state, last three numbers indicate the county
+    -   Example: Alabama’s state code is 01 because it is first alphabetically
+    -   Note: Alaska and Hawaii are not included because they are not part of the contiguous US
+-   **Lat** \| Latitude of the monitor in degrees
+-   **Lon** \| Longitude of the monitor in degrees
+-   **state** \| State where the monitor is located
+-   **county** \| County where the monitor is located
+-   **city** \| City where the monitor is located
+-   **CMAQ** \| Estimated values of air pollution from a computational model called [Community Multiscale Air Quality (CMAQ)](https://www.epa.gov/cmaq)
+    -   A monitoring system that simulates the physics of the atmosphere using chemistry and weather data to predict the air pollution
+    -   Data from EPA
+-   **zcta** \| [Zip Code Tabulation Area](https://en.wikipedia.org/wiki/ZIP_Code_Tabulation_Area) where the monitor is located
+    -   Postal Zip codes are converted into “generalized areal representations” that are non-overlapping
+    -   Data from the 2010 Census
+-   **zcta_area** \| Land area of the zip code area in meters squared
+    -   Data from the 2010 Census
+-   **zcta_pop** \| Population in the zip code area
+    -   Data from the 2010 Census
+-   **imp_a500, imp_a1000, imp_a5000, imp_a10000, imp_a15000** \| Impervious surface measure
+    -   Impervious surface are roads, concrete, parking lots, buildings
+    -   Measured within a circle with a radius of 500, 1000, 5000, 10000, and 15000 meters respectively around the monitor
+-   **county_area** \| Land area of the county of the monitor in meters squared
+-   **county_pop** \| Population of the county of the monitor
+-   **Log_dist_to_prisec** \| Log (Natural log) distance to a primary or secondary road from the monitor
+    -   Highway or major road
+-   **log_pri_length_5000, log_pri_length_10000, log_pri_length_15000, log_pri_length_25000** \| Count of primary road length in meters in a circle with a radius of 5000, 10000, 15000, and 25000 meters respectively around the monitor (Natural log)
+    -   Highways only
+-   **log_prisec_length_500, log_prisec_length_1000, log_prisec_length_5000, log_prisec_length_10000, log_prisec_length_15000, log_prisec_length_25000** \| Count of primary and secondary road length in meters in a circle with a radius of 500, 1000, 5000, 10000, 15000, 25000 meters around the monitor (Natural log)
+    -   Highway and secondary roads
+-   **log_nei_2008_pm25_sum_10000, log_nei_2008_pm25_sum_15000, log_nei_2008_pm25_sum_25000** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
+    -   Fine Particulate Matter (diameter 2.5 µm)
+-   **log_nei_2008_pm10_sum_10000, log_nei_2008_pm10_sum_15000, log_nei_2008_pm10_sum_25000** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
+    -   Large Coarse Particulate Matter (diameter 10 µm)
+-   **popdens_county** \| Population density (number of people per kilometer squared area of the county)
+-   **popdens_zcta** \| Population density (number of people per kilometer squared area of zcta)
+-   From the Census:
+    -   **nohs** \| Percentage of people in zcta area where the monitor is that do not have a high school degree
+    -   **somehs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
+    -   **hs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree
+    -   **somecollege** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
+    -   **associate** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing an associate degree
+    -   **bachelor** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a bachelor’s degree
+    -   **grad** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a graduate degree
+    -   **pov** \| Percentage of people in zcta area where the monitor is that lived in [poverty](https://aspe.hhs.gov/2008-hhs-poverty-guidelines) in 2008
+-   **hs_orless** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of nohs, somehs, and hs)
+-   **urc2013, urc2006** \| [2013](https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf), [2006 Urban-rural classification](https://www.cdc.gov/nchs/data/series/sr_02/sr02_154.pdf) of the county where the monitor is located
+    -   6 category variable - 1 is totally urban 6 is completely rural
+    -   Data from the [National Center for Health Statistics](https://www.cdc.gov/nchs/index.htm)
+-   **aod** \| Aerosol Optical Depth measurement from a NASA satellite
+    -   Based on the diffraction of a laser
+    -   Used as a proxy of particulate pollution
+    -   Unit-less - higher value indicates more pollution
+    -   Data from NASA
+
 ### Data Import
 
 ```{r}
@@ -111,7 +111,6 @@ pm <- read_csv("data/pm25_data.csv")
 ```{r}
 
 ```
-
 
 ```{r}
 # Vivian's EDA
@@ -158,7 +157,6 @@ pm_long <- pm |>
   select(1:2, CMAQ, aod, everything()) |>
   pivot_longer(2:4)
 ```
-
 
 ```{r}
 plot_popdens_zcta <- {
@@ -209,7 +207,6 @@ plot_popdens_zcta <- {
 plot_popdens_zcta
 ```
 
-
 ```{r}
 plot_popdens_county <- {
   pm_long |> 
@@ -245,6 +242,23 @@ ggplot(pm_data, aes(x = pop_density_cluster, y = value)) +
   labs(title = "PM2.5 Levels by Population Density Clusters and State",
        x = "Population Density Cluster",
        y = "PM2.5 Levels")
+```
+
+```{r}
+#Sean's EDA
+#check development correlation
+select(pm, contains("imp")) |>
+  GGally::ggcorr(hjust = .85, size = 3,
+       layout.exp=2, label = TRUE)
+#want to compare education vs. development but was negative
+pm |>
+select(nohs, popdens_county, 
+       hs, imp_a10000, somecollege) |>
+  GGally::ggpairs()
+#population density and emission are correlated
+pm |>
+select(log_nei_2008_pm25_sum_10000, popdens_county) |>
+  GGally::ggpairs()
 ```
 
 ```{r}
@@ -285,7 +299,6 @@ ggplot(pm, aes(x = urc2013, y = log_nei_2008_pm25_sum_25000)) +
   theme_minimal()
 
 ```
-
 
 EDA Visualizations
 
@@ -381,7 +394,6 @@ mod_full <- lm(value ~ ., data=pm)
 # ols_step_backward_p(mod_full) # error running
 ```
 
-
-## Results & Discussion 
+## Results & Discussion
 
 ## Conclusion

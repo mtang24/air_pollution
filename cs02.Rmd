@@ -77,7 +77,7 @@ It contains 48 features (variables) with values for each of the 876 monitors (ob
    - Large Coarse Particulate Matter (diameter 10 µm) 
  - **popdens_county** | Population density (number of people per kilometer squared area of the county)
  - **popdens_zcta** | Population density (number of people per kilometer squared area of zcta)
- - **From the Census:**
+ - From the Census:
    - **nohs** | Percentage of people in zcta area where the monitor is that do not have a high school degree
    - **somehs** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
    - **hs** | Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree

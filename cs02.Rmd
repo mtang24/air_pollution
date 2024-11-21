@@ -5,6 +5,9 @@ output:
   html_document:
     toc: true
     toc_float: true
+    toc_depth: 3
+    theme: spacelab
+    highlight: tango
     code_folding: show
 ---
 
@@ -145,7 +148,84 @@ pm %>%
   geom_boxplot()
 ```
 
+```{r}
+pm <- pm |> 
+  mutate(id = as.character(id))
+```
 
+```{r}
+pm_long <- pm |> 
+  select(1:2, CMAQ, aod, everything()) |>
+  pivot_longer(2:4)
+```
+
+
+```{r}
+plot_popdens_zcta <- {
+  pm_long |> 
+    ggplot(aes(x = popdens_zcta, y = value)) + 
+      geom_point(color = "#19831C") +
+      facet_wrap(~name, scales = "free") +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
+      theme_classic() +
+      labs(title = "Air Pollution Metrics by Zip Code Population Density",
+           x = "popdens_zcta") +
+      theme(strip.background = element_blank(),
+            plot.title.position = "plot")
+}
+plot_popdens_zcta
+```
+
+```{r}
+plot_popdens_county <- {
+  pm_long |> 
+    ggplot(aes(x = popdens_county, y = value)) + 
+      geom_point(color = "#88231C") +
+      facet_wrap(~name, scales = "free") +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
+      theme_classic() +
+      labs(title = "Air Pollution Metrics by County Population Density",
+           x = "popdens_county") +
+      theme(strip.background = element_blank(),
+            plot.title.position = "plot")
+}
+plot_popdens_county
+```
+
+```{r}
+plot_popdens_zcta <- {
+  pm_long |> 
+    filter(popdens_zcta <= 5000) |>  # Filter for popdens_zcta <= 5000
+    ggplot(aes(x = popdens_zcta, y = value)) + 
+      geom_point(color = "#19831C") +
+      facet_wrap(~name, scales = "free") +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
+      theme_classic() +
+      labs(title = "Air Pollution Metrics by Zip Code Population Density",
+           x = "popdens_zcta") +
+      theme(strip.background = element_blank(),
+            plot.title.position = "plot")
+}
+plot_popdens_zcta
+```
+
+
+```{r}
+plot_popdens_county <- {
+  pm_long |> 
+    filter(popdens_county <= 5000) |>  # Filter for popdens_county <= 5000
+    ggplot(aes(x = popdens_county, y = value)) + 
+      geom_point(color = "#88231C") +
+      facet_wrap(~name, scales = "free") +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
+      theme_classic() +
+      labs(title = "Air Pollution Metrics by County Population Density",
+           x = "popdens_county") +
+      theme(strip.background = element_blank(),
+            plot.title.position = "plot")
+}
+plot_popdens_county
+```
 
 ## Analysis
 

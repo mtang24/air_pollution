@@ -29,6 +29,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 library(tidyverse)
 library(tidymodels)
 library(olsrr)
+library(GGally)
 ```
 
 ## The Data
@@ -106,10 +107,64 @@ It contains 48 features (variables) with values for each of the 876 monitors (ob
 pm <- read_csv("data/pm25_data.csv")
 ```
 
-### Data Wrangling
+### Data Wrangling and EDA
 
 ```{r}
+climate_regions <- c(
+  "Connecticut" = "Northeast",
+  "Delaware" = "Northeast",
+  "District Of Columbia" = "Northeast",
+  "Maine" = "Northeast",
+  "Maryland" = "Northeast",
+  "Massachusetts" = "Northeast",
+  "New Hampshire" = "Northeast",
+  "New Jersey" = "Northeast",
+  "New York" = "Northeast",
+  "Pennsylvania" = "Northeast",
+  "Rhode Island" = "Northeast",
+  "Vermont" = "Northeast",
+  "Iowa" = "Upper Midwest",
+  "Michigan" = "Upper Midwest",
+  "Minnesota" = "Upper Midwest",
+  "Wisconsin" = "Upper Midwest",
+  "Illinois" = "Ohio Valley",
+  "Indiana" = "Ohio Valley",
+  "Kentucky" = "Ohio Valley",
+  "Missouri" = "Ohio Valley",
+  "Ohio" = "Ohio Valley",
+  "Tennessee" = "Ohio Valley",
+  "West Virginia" = "Ohio Valley",
+  "Alabama" = "Southeast",
+  "Florida" = "Southeast",
+  "Georgia" = "Southeast",
+  "North Carolina" = "Southeast",
+  "South Carolina" = "Southeast",
+  "Virginia" = "Southeast",
+  "Montana" = "Northern Rockies and Plains",
+  "Nebraska" = "Northern Rockies and Plains",
+  "North Dakota" = "Northern Rockies and Plains",
+  "South Dakota" = "Northern Rockies and Plains",
+  "Wyoming" = "Northern Rockies and Plains",
+  "Arkansas" = "South",
+  "Kansas" = "South",
+  "Louisiana" = "South",
+  "Mississippi" = "South",
+  "Oklahoma" = "South",
+  "Texas" = "South",
+  "Arizona" = "Southwest",
+  "Colorado" = "Southwest",
+  "New Mexico" = "Southwest",
+  "Utah" = "Southwest",
+  "Idaho" = "Northwest",
+  "Oregon" = "Northwest",
+  "Washington" = "Northwest",
+  "California" = "West",
+  "Nevada" = "West"
+)
 
+# Add a new column with region labels
+pm <- pm |>
+  mutate(climate_region = recode(state, !!!climate_regions))
 ```
 
 ```{r}
@@ -393,6 +448,11 @@ pm_full <-  lin_mod |>
 #mod_full <- lm(value ~ ., data=pm)
 # ols_step_backward_p(mod_full) # error running
 ```
+
+```{r}
+
+```
+
 
 ## Results & Discussion
 

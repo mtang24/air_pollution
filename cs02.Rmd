@@ -450,6 +450,37 @@ pm_full <-  lin_mod |>
 ```
 
 ```{r}
+# install.packages("randomForest")
+RF_PM_model <- parsnip::rand_forest(mtry = 10, min_n = 3) |> 
+  set_engine("randomForest") |>
+  set_mode("regression")
+
+RF_PM_model
+
+#Workflow code from lecture
+RF_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(RF_PM_model)
+
+RF_wflow
+
+# Fitting the data
+RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
+
+RF_wflow_fit
+
+# Look at feature importance
+RF_wflow_fit |> 
+  extract_fit_parsnip() |> 
+  vip::vip(num_features = 10)
+```
+
+
+```{r}
+
+```
+
+```{r}
 
 ```
 

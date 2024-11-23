@@ -38,8 +38,6 @@ Our data comes from the US Environmental Protection Agency (EPA), the National A
 
 It contains 48 features (variables) with values for each of the 876 monitors (observations).
 
- 
-
 ##### The features are:
 
 -   **id** \| Monitor number
@@ -163,52 +161,52 @@ climate_regions <- c(
 )
 
 # Add a new column with region labels
-pm <- pm |>
+pm_clim <- pm |>
   mutate(climate_region = recode(state, !!!climate_regions))
 ```
 
 ```{r}
 # Vivian's EDA
 # Creating a new column based on the placement of the monitor relative to the 40 degree latitude line
-pm <- pm |>
+pm_quad <- pm |>
   mutate(n_or_s = case_when(
     lat >= 40 ~ "north",
     lat < 40 ~ "south"
   ))
-pm %>% 
+pm_quad %>% 
   ggplot(aes(y = CMAQ, x = n_or_s)) +
   geom_boxplot()
 
 # Creating a new column based on the placement of the monitor relative to the 100 degree longitude line
-pm <- pm |>
+pm_quad <- pm_quad |>
   mutate(e_or_w = case_when(
     lon >= -100 ~ "east",
     lon < -100 ~ "west"
   ))
-pm %>% 
+pm_quad %>% 
   ggplot(aes(y = CMAQ, x = e_or_w)) +
   geom_boxplot()
 
 # Creating a new column based on the quadrant of the US the monitor is in
-pm <- pm |>
+pm_quad <- pm_quad |>
   mutate(quadrant = case_when(
     lon >= -100 & lat >= 40 ~ "northeast",
     lon >= -100 & lat < 40 ~ "southeast",
     lon < -100 & lat >= 40 ~ "northwest",
     lon < -100 & lat < 40 ~ "southwest"
   ))
-pm %>% 
+pm_quad %>% 
   ggplot(aes(y = CMAQ, x = quadrant)) +
   geom_boxplot()
 ```
 
 ```{r}
-pm <- pm |> 
+pm_dens <- pm |> 
   mutate(id = as.character(id))
 ```
 
 ```{r}
-pm_long <- pm |> 
+pm_long <- pm_dens |> 
   select(1:2, CMAQ, aod, everything()) |>
   pivot_longer(2:4)
 ```
@@ -281,18 +279,18 @@ plot_popdens_county
 
 ```{r}
 # Maddy's EDA
-pm <- pm |> 
+pm_cl <- pm |> 
   mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
 
-ggplot(pm, aes(x = pop_density_cluster, y = value)) +
+ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "pink") +
   labs(title = "PM2.5 Levels by Population Density Clusters",
        x = "Population Density Cluster",
        y = "PM2.5 Levels")
 
 
-ggplot(pm, aes(x = pop_density_cluster, y = value)) +
+ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "green") + facet_wrap(~state) +
   labs(title = "PM2.5 Levels by Population Density Clusters and State",
        x = "Population Density Cluster",
@@ -389,11 +387,152 @@ pm <- pm |>
 pm <- pm |>
   mutate(city = case_when(city == "Not in a city" ~ "Not in a city",
                           city != "Not in a city" ~ "In a city"))
+pm
 ```
 
 ```{r}
 set.seed(1234) # same seed as before
 pm_split <- rsample::initial_split(data = pm, prop = 2/3)
+pm_split
+```
+
+```{r}
+ train_pm <- rsample::training(pm_split)
+ test_pm <- rsample::testing(pm_split)
+```
+
+```{r}
+set.seed(1234)
+vfold_pm <- rsample::vfold_cv(data = train_pm, v = 4)
+vfold_pm
+```
+
+
+```{r}
+RF_rec <- recipe(train_pm) |>
+    update_role(everything(), new_role = "predictor")|>
+    update_role(value, new_role = "outcome")|>
+    update_role(id, new_role = "id variable") |>
+    update_role("fips", new_role = "county id") |>
+    step_novel("state") |>
+    step_string2factor("state", "county", "city") |>
+    step_rm("county") |>
+    step_rm("zcta") |>
+    step_corr(all_numeric())|>
+    step_nzv(all_numeric())
+```
+
+```{r}
+RF_PM_model <- parsnip::rand_forest(mtry = 10, min_n = 3) |> 
+  set_engine("randomForest") |>
+  set_mode("regression")
+
+RF_PM_model
+```
+
+```{r}
+RF_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(RF_PM_model)
+
+RF_wflow
+```
+
+```{r}
+RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
+
+RF_wflow_fit
+```
+
+```{r}
+RF_wflow_fit |> 
+  extract_fit_parsnip() |> 
+  vip::vip(num_features = 10)
+```
+
+```{r}
+set.seed(456)
+resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
+collect_metrics(resample_RF_fit)
+```
+
+```{r}
+tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
+  set_engine("randomForest") |>
+  set_mode("regression")
+    
+tune_RF_model
+```
+
+```{r}
+RF_tune_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(tune_RF_model)
+
+RF_tune_wflow
+```
+
+```{r}
+n_cores <- parallel::detectCores()
+n_cores
+```
+
+```{r}
+doParallel::registerDoParallel(cores = n_cores)
+
+set.seed(123)
+tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 20)
+tune_RF_results
+```
+
+```{r}
+tune_RF_results |>
+  collect_metrics()
+```
+
+```{r}
+show_best(tune_RF_results, metric = "rmse", n = 1)
+```
+
+```{r}
+tuned_RF_values <- select_best(tune_RF_results,  metric = "rmse")
+tuned_RF_values
+```
+
+```{r}
+# specify best combination from tune in workflow
+RF_tuned_wflow <-RF_tune_wflow |>
+  tune::finalize_workflow(tuned_RF_values)
+
+# fit model with those parameters on train AND test
+overallfit <- RF_wflow |>
+  tune::last_fit(pm_split)
+
+collect_metrics(overallfit)
+```
+
+```{r}
+test_predictions <- collect_predictions(overallfit)
+test_predictions
+```
+
+PM model with climate regions
+
+```{r}
+pm_clim <- pm_clim |>
+  mutate(across(c(id, fips, zcta), as.factor)) 
+```
+
+```{r}
+pm_clim <- pm_clim |>
+  mutate(city = case_when(city == "Not in a city" ~ "Not in a city",
+                          city != "Not in a city" ~ "In a city"))
+pm_clim
+```
+
+```{r}
+set.seed(1234) # same seed as before
+pm_split <- rsample::initial_split(data = pm_clim, prop = 2/3)
 pm_split
 ```
 

@@ -80,18 +80,18 @@ It contains 48 features (variables) with values for each of the 876 monitors (ob
     -   Fine Particulate Matter (diameter 2.5 µm)
 -   **log_nei_2008_pm10_sum_10000, log_nei_2008_pm10_sum_15000, log_nei_2008_pm10_sum_25000** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
     -   Large Coarse Particulate Matter (diameter 10 µm)
--   **pop_dens_county** \| Population density (number of people per kilometer squared area of the county)
--   **pop_dens_zcta** \| Population density (number of people per kilometer squared area of zcta)
+-   **popdens_county** \| Population density (number of people per kilometer squared area of the county)
+-   **popdens_zcta** \| Population density (number of people per kilometer squared area of zcta)
 -   From the Census:
     -   **nohs** \| Percentage of people in zcta area where the monitor is that do not have a high school degree
     -   **somehs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
     -   **hs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree
-    -   **some_college** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
+    -   **somecollege** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
     -   **associate** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing an associate degree
     -   **bachelor** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a bachelor’s degree
     -   **grad** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a graduate degree
     -   **pov** \| Percentage of people in zcta area where the monitor is that lived in [poverty](https://aspe.hhs.gov/2008-hhs-poverty-guidelines) in 2008
--   **hs_or_less** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of nohs, somehs, and hs)
+-   **hs_orless** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of nohs, somehs, and hs)
 -   **urc2013, urc2006** \| [2013](https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf), [2006 Urban-rural classification](https://www.cdc.gov/nchs/data/series/sr_02/sr02_154.pdf) of the county where the monitor is located
     -   6 category variable - 1 is totally urban 6 is completely rural
     -   Data from the [National Center for Health Statistics](https://www.cdc.gov/nchs/index.htm)
@@ -108,22 +108,6 @@ pm <- read_csv("data/pm25_data.csv")
 ```
 
 ### Data Wrangling and EDA
-
-```{r}
-#Renaming some features for clarity and ease of viewing
-pm <- pm |>
-  rename(some_hs = somehs,
-         some_college = somecollege,
-         pop_density_county = popdens_county,
-         pop_dens_zcta = popdens_zcta,
-         hs_or_less = hs_orless)
-#some more to consider renaming
-#log_pri_length_5000, log_pri_length_10000, log_pri_length_15000, log_pri_length_25000
-#log_prisec_length_500, log_prisec_length_1000, log_prisec_length_5000, log_prisec_length_10000, log_prisec_length_15000, log_prisec_length_25000
-#log_nei_2008_pm25_sum_10000, log_nei_2008_pm25_sum_15000, log_nei_2008_pm25_sum_25000
-#log_nei_2008_pm10_sum_10000, log_nei_2008_pm10_sum_15000, log_nei_2008_pm10_sum_25000
-```
-
 
 ```{r}
 climate_regions <- c(
@@ -230,75 +214,75 @@ pm_long <- pm |>
 ```
 
 ```{r}
-plot_pop_dens_zcta <- {
+plot_popdens_zcta <- {
   pm_long |> 
-    ggplot(aes(x = pop_dens_zcta, y = value)) + 
+    ggplot(aes(x = popdens_zcta, y = value)) + 
       geom_point(color = "#19831C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by Zip Code Population Density",
-           x = "pop_dens_zcta") +
+           x = "popdens_zcta") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_pop_dens_zcta
+plot_popdens_zcta
 ```
 
 ```{r}
-plot_pop_density_county <- {
+plot_popdens_county <- {
   pm_long |> 
-    ggplot(aes(x = pop_dens_county, y = value)) + 
+    ggplot(aes(x = popdens_county, y = value)) + 
       geom_point(color = "#88231C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by County Population Density",
-           x = "pop_density_county") +
+           x = "popdens_county") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_pop_dens_county
+plot_popdens_county
 ```
 
 ```{r}
-plot_pop_dens_zcta <- {
+plot_popdens_zcta <- {
   pm_long |> 
-    filter(pop_dens_zcta <= 5000) |>  # Filter for pop_dens_zcta <= 5000
-    ggplot(aes(x = pop_dens_zcta, y = value)) + 
+    filter(popdens_zcta <= 5000) |>  # Filter for popdens_zcta <= 5000
+    ggplot(aes(x = popdens_zcta, y = value)) + 
       geom_point(color = "#19831C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by Zip Code Population Density",
-           x = "pop_dens_zcta") +
+           x = "popdens_zcta") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_pop_dens_zcta
+plot_popdens_zcta
 ```
 
 ```{r}
-plot_pop_dens_county <- {
+plot_popdens_county <- {
   pm_long |> 
-    filter(pop_dens_county <= 5000) |>  # Filter for pop_dens_county <= 5000
-    ggplot(aes(x = pop_dens_county, y = value)) + 
+    filter(popdens_county <= 5000) |>  # Filter for popdens_county <= 5000
+    ggplot(aes(x = popdens_county, y = value)) + 
       geom_point(color = "#88231C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by County Population Density",
-           x = "pop_dens_county") +
+           x = "popdens_county") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_pop_dens_county
+plot_popdens_county
 ```
 
 ```{r}
 # Maddy's EDA
 pm <- pm |> 
-  mutate(pop_density_cluster = cut(pop_dens_county, breaks = 3, labels = c("Low", "Medium", "High")))
+  mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
 
 ggplot(pm, aes(x = pop_density_cluster, y = value)) +
@@ -323,12 +307,12 @@ select(pm, contains("imp")) |>
        layout.exp=2, label = TRUE)
 #want to compare education vs. development but was negative
 pm |>
-select(nohs, pop_dens_county, 
-       hs, imp_a10000, some_college) |>
+select(nohs, popdens_county, 
+       hs, imp_a10000, somecollege) |>
   GGally::ggpairs()
 #population density and emission are correlated
 pm |>
-select(log_nei_2008_pm25_sum_10000, pop_dens_county) |>
+select(log_nei_2008_pm25_sum_10000, popdens_county) |>
   GGally::ggpairs()
 ```
 
@@ -389,7 +373,7 @@ select(pm, contains("pri")) |>
 ```{r}
 # nei with population density 
 pm |>
-select(log_nei_2008_pm25_sum_10000, pop_dens_county, 
+select(log_nei_2008_pm25_sum_10000, popdens_county, 
        log_pri_length_10000, imp_a10000, county_pop) |>
   GGally::ggpairs()
 ```
@@ -397,72 +381,140 @@ select(log_nei_2008_pm25_sum_10000, pop_dens_county,
 ## Analysis
 
 ```{r}
-linear_reg()
-
-lin_mod <- linear_reg() |>
-  set_engine("lm") # lm: linear model
-
-# fit model
-mod_cmaq_value <- lin_mod |>
-  fit(value ~ CMAQ, data = pm) 
-
-# display results
-mod_cmaq_value |>
-  tidy()
+pm <- pm |>
+  mutate(across(c(id, fips, zcta), as.factor)) 
 ```
 
 ```{r}
-pm <- pm |> 
-  mutate(popdens = case_when(
-    pop_dens_zcta >= median(pm$pop_dens_zcta) ~ "hi",
-    pop_dens_zcta < median(pm$pop_dens_zcta) ~ "low"          
-  ))
-
-# Fit model with main effects
-pm_main_fit <- lin_mod |>
-  fit(value ~ CMAQ + popdens, data = pm)
-
-pm_main_fit |> tidy()
-
-# Display model
-pm_main_fit |>
-  tidy() |> 
-  mutate(exp_estimate = exp(estimate)) |>
-  select(term, estimate, exp_estimate)
-
-# Display adj. R-squared
-glance(pm_main_fit)$adj.r.squared
+pm <- pm |>
+  mutate(city = case_when(city == "Not in a city" ~ "Not in a city",
+                          city != "Not in a city" ~ "In a city"))
 ```
 
 ```{r}
-# Fit model with interaction effects
-pm_int_fit <- lin_mod |>
-  fit(value ~ CMAQ * popdens, data = pm)
-
-# Display adj. R-squared
-glance(pm_int_fit)$adj.r.squared
+set.seed(1234) # same seed as before
+pm_split <- rsample::initial_split(data = pm, prop = 2/3)
+pm_split
 ```
 
 ```{r}
-# Fit full model using tidymodels
-pm_full <-  lin_mod |>
-  fit(value ~ ., data=pm)
-
-# Display adj. R-squared
-#glance(pm_full)$adj.r.squared # Displays wrong value currently?
+ train_pm <- rsample::training(pm_split)
+ test_pm <- rsample::testing(pm_split)
 ```
 
 ```{r}
-# Backward selection: fit model with a few columns
-# mod <- lm(value ~ log_pri_length_25000 + log_prisec_length_15000 +
-#           log_nei_2008_pm25_sum_15000 , data=pm)
-# ols_step_backward_p(mod)
+set.seed(1234)
+vfold_pm <- rsample::vfold_cv(data = train_pm, v = 4)
+vfold_pm
+```
+
+
+```{r}
+RF_rec <- recipe(train_pm) |>
+    update_role(everything(), new_role = "predictor")|>
+    update_role(value, new_role = "outcome")|>
+    update_role(id, new_role = "id variable") |>
+    update_role("fips", new_role = "county id") |>
+    step_novel("state") |>
+    step_string2factor("state", "county", "city") |>
+    step_rm("county") |>
+    step_rm("zcta") |>
+    step_corr(all_numeric())|>
+    step_nzv(all_numeric())
 ```
 
 ```{r}
-# Backward selection: fit full model
-#mod_full <- lm(value ~ ., data=pm)
-# ols_step_backward_p(mod_full) # error running
+RF_PM_model <- parsnip::rand_forest(mtry = 10, min_n = 3) |> 
+  set_engine("randomForest") |>
+  set_mode("regression")
+
+RF_PM_model
+```
+
+```{r}
+RF_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(RF_PM_model)
+
+RF_wflow
+```
+
+```{r}
+RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
+
+RF_wflow_fit
+```
+
+```{r}
+RF_wflow_fit |> 
+  extract_fit_parsnip() |> 
+  vip::vip(num_features = 10)
+```
+
+```{r}
+set.seed(456)
+resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
+collect_metrics(resample_RF_fit)
+```
+
+```{r}
+tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
+  set_engine("randomForest") |>
+  set_mode("regression")
+    
+tune_RF_model
+```
+
+```{r}
+RF_tune_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(tune_RF_model)
+
+RF_tune_wflow
+```
+
+```{r}
+n_cores <- parallel::detectCores()
+n_cores
+```
+
+```{r}
+doParallel::registerDoParallel(cores = n_cores)
+
+set.seed(123)
+tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 20)
+tune_RF_results
+```
+
+```{r}
+tune_RF_results |>
+  collect_metrics()
+```
+
+```{r}
+show_best(tune_RF_results, metric = "rmse", n = 1)
+```
+
+```{r}
+tuned_RF_values <- select_best(tune_RF_results,  metric = "rmse")
+tuned_RF_values
+```
+
+```{r}
+# specify best combination from tune in workflow
+RF_tuned_wflow <-RF_tune_wflow |>
+  tune::finalize_workflow(tuned_RF_values)
+
+# fit model with those parameters on train AND test
+overallfit <- RF_wflow |>
+  tune::last_fit(pm_split)
+
+collect_metrics(overallfit)
+```
+
+```{r}
+test_predictions <- collect_predictions(overallfit)
+test_predictions
 ```
 
 ```{r}
@@ -511,16 +563,6 @@ RF_wflow_fit |>
   extract_fit_parsnip() |> 
   vip::vip(num_features = 10)
 ```
-
-
-```{r}
-
-```
-
-```{r}
-
-```
-
 
 ## Results & Discussion
 

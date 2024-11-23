@@ -80,18 +80,18 @@ It contains 48 features (variables) with values for each of the 876 monitors (ob
     -   Fine Particulate Matter (diameter 2.5 µm)
 -   **log_nei_2008_pm10_sum_10000, log_nei_2008_pm10_sum_15000, log_nei_2008_pm10_sum_25000** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
     -   Large Coarse Particulate Matter (diameter 10 µm)
--   **popdens_county** \| Population density (number of people per kilometer squared area of the county)
--   **popdens_zcta** \| Population density (number of people per kilometer squared area of zcta)
+-   **pop_dens_county** \| Population density (number of people per kilometer squared area of the county)
+-   **pop_dens_zcta** \| Population density (number of people per kilometer squared area of zcta)
 -   From the Census:
     -   **nohs** \| Percentage of people in zcta area where the monitor is that do not have a high school degree
     -   **somehs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
     -   **hs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree
-    -   **somecollege** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
+    -   **some_college** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
     -   **associate** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing an associate degree
     -   **bachelor** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a bachelor’s degree
     -   **grad** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a graduate degree
     -   **pov** \| Percentage of people in zcta area where the monitor is that lived in [poverty](https://aspe.hhs.gov/2008-hhs-poverty-guidelines) in 2008
--   **hs_orless** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of nohs, somehs, and hs)
+-   **hs_or_less** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of nohs, somehs, and hs)
 -   **urc2013, urc2006** \| [2013](https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf), [2006 Urban-rural classification](https://www.cdc.gov/nchs/data/series/sr_02/sr02_154.pdf) of the county where the monitor is located
     -   6 category variable - 1 is totally urban 6 is completely rural
     -   Data from the [National Center for Health Statistics](https://www.cdc.gov/nchs/index.htm)
@@ -108,6 +108,22 @@ pm <- read_csv("data/pm25_data.csv")
 ```
 
 ### Data Wrangling and EDA
+
+```{r}
+#Renaming some features for clarity and ease of viewing
+pm <- pm |>
+  rename(some_hs = somehs,
+         some_college = somecollege,
+         pop_density_county = popdens_county,
+         pop_dens_zcta = popdens_zcta,
+         hs_or_less = hs_orless)
+#some more to consider renaming
+#log_pri_length_5000, log_pri_length_10000, log_pri_length_15000, log_pri_length_25000
+#log_prisec_length_500, log_prisec_length_1000, log_prisec_length_5000, log_prisec_length_10000, log_prisec_length_15000, log_prisec_length_25000
+#log_nei_2008_pm25_sum_10000, log_nei_2008_pm25_sum_15000, log_nei_2008_pm25_sum_25000
+#log_nei_2008_pm10_sum_10000, log_nei_2008_pm10_sum_15000, log_nei_2008_pm10_sum_25000
+```
+
 
 ```{r}
 climate_regions <- c(
@@ -214,75 +230,75 @@ pm_long <- pm |>
 ```
 
 ```{r}
-plot_popdens_zcta <- {
+plot_pop_dens_zcta <- {
   pm_long |> 
-    ggplot(aes(x = popdens_zcta, y = value)) + 
+    ggplot(aes(x = pop_dens_zcta, y = value)) + 
       geom_point(color = "#19831C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by Zip Code Population Density",
-           x = "popdens_zcta") +
+           x = "pop_dens_zcta") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_popdens_zcta
+plot_pop_dens_zcta
 ```
 
 ```{r}
-plot_popdens_county <- {
+plot_pop_density_county <- {
   pm_long |> 
-    ggplot(aes(x = popdens_county, y = value)) + 
+    ggplot(aes(x = pop_dens_county, y = value)) + 
       geom_point(color = "#88231C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by County Population Density",
-           x = "popdens_county") +
+           x = "pop_density_county") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_popdens_county
+plot_pop_dens_county
 ```
 
 ```{r}
-plot_popdens_zcta <- {
+plot_pop_dens_zcta <- {
   pm_long |> 
-    filter(popdens_zcta <= 5000) |>  # Filter for popdens_zcta <= 5000
-    ggplot(aes(x = popdens_zcta, y = value)) + 
+    filter(pop_dens_zcta <= 5000) |>  # Filter for pop_dens_zcta <= 5000
+    ggplot(aes(x = pop_dens_zcta, y = value)) + 
       geom_point(color = "#19831C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by Zip Code Population Density",
-           x = "popdens_zcta") +
+           x = "pop_dens_zcta") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_popdens_zcta
+plot_pop_dens_zcta
 ```
 
 ```{r}
-plot_popdens_county <- {
+plot_pop_dens_county <- {
   pm_long |> 
-    filter(popdens_county <= 5000) |>  # Filter for popdens_county <= 5000
-    ggplot(aes(x = popdens_county, y = value)) + 
+    filter(pop_dens_county <= 5000) |>  # Filter for pop_dens_county <= 5000
+    ggplot(aes(x = pop_dens_county, y = value)) + 
       geom_point(color = "#88231C") +
       facet_wrap(~name, scales = "free") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.1)), limits = c(0, NA)) +
       theme_classic() +
       labs(title = "Air Pollution Metrics by County Population Density",
-           x = "popdens_county") +
+           x = "pop_dens_county") +
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_popdens_county
+plot_pop_dens_county
 ```
 
 ```{r}
 # Maddy's EDA
 pm <- pm |> 
-  mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
+  mutate(pop_density_cluster = cut(pop_dens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
 
 ggplot(pm, aes(x = pop_density_cluster, y = value)) +
@@ -307,12 +323,12 @@ select(pm, contains("imp")) |>
        layout.exp=2, label = TRUE)
 #want to compare education vs. development but was negative
 pm |>
-select(nohs, popdens_county, 
-       hs, imp_a10000, somecollege) |>
+select(nohs, pop_dens_county, 
+       hs, imp_a10000, some_college) |>
   GGally::ggpairs()
 #population density and emission are correlated
 pm |>
-select(log_nei_2008_pm25_sum_10000, popdens_county) |>
+select(log_nei_2008_pm25_sum_10000, pop_dens_county) |>
   GGally::ggpairs()
 ```
 
@@ -373,7 +389,7 @@ select(pm, contains("pri")) |>
 ```{r}
 # nei with population density 
 pm |>
-select(log_nei_2008_pm25_sum_10000, popdens_county, 
+select(log_nei_2008_pm25_sum_10000, pop_dens_county, 
        log_pri_length_10000, imp_a10000, county_pop) |>
   GGally::ggpairs()
 ```
@@ -398,8 +414,8 @@ mod_cmaq_value |>
 ```{r}
 pm <- pm |> 
   mutate(popdens = case_when(
-    popdens_zcta >= median(pm$popdens_zcta) ~ "hi",
-    popdens_zcta < median(pm$popdens_zcta) ~ "low"          
+    pop_dens_zcta >= median(pm$pop_dens_zcta) ~ "hi",
+    pop_dens_zcta < median(pm$pop_dens_zcta) ~ "low"          
   ))
 
 # Fit model with main effects

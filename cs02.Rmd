@@ -13,6 +13,15 @@ output:
 
 ## Introduction
 
+Air pollution is a pressing environmental issue, with various types of pollutants affecting air quality. Among these, fine particulate matter (PM2.5)—particles smaller than 2.5 µm in diameter—is particularly harmful [^1]. Exposure to PM2.5 is linked to severe health problems, and some regions in the United States experience pollution levels that exceed the World Health Organization's recommended limits [^2] [^3]. 
+
+Accurately predicting annual average air pollution concentrations in the U.S. has significant benefits, such as informing public health initiatives and guiding policy decisions. While traditional air pollution measurement methods provide valuable data, their uneven distribution nationwide and limited coverage of PM2.5 levels create gaps in understanding [^4]. To address this problem, we use machine learning to develop a model aimed at improving the accuracy of air pollution predictions. This model also incorporates climate region as a factor to account for geographic variability, seeking to enhance prediction accuracy, especially in regions with sparse monitor coverage.
+
+[^1]: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
+[^2]: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
+[^3]: https://www.stateofglobalair.org/sites/default/files/soga_2019_fact_sheet.pdf
+[^4]: https://ehjournal.biomedcentral.com/articles/10.1186/1476-069X-13-63
+
 ```{r setup, include=FALSE}
 # control global Rmd chunk settings
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
@@ -21,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ## Questions
 
 -   With what accuracy can we predict US annual average air pollution concentrations?
--   Extension question
+-   How does incorporating a climate region category affect the accuracy of PM2.5 concentration predictions?
 
 ### Load packages
 
@@ -164,6 +173,19 @@ climate_regions <- c(
 pm_clim <- pm |>
   mutate(climate_region = recode(state, !!!climate_regions))
 ```
+
+```{r}
+pm_clim %>%
+  ggplot(aes(x = climate_region, y = value, fill = climate_region)) + 
+    geom_boxplot() + 
+    theme_classic() + 
+    labs(title = "Distribution of PM2.5 Concentrations by Climate Region", 
+         x = "Climate Region", 
+         y = "Value") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
 
 ```{r}
 # Vivian's EDA
@@ -378,6 +400,8 @@ select(log_nei_2008_pm25_sum_10000, popdens_county,
 
 ## Analysis
 
+PM model without climate regions
+
 ```{r}
 pm <- pm |>
   mutate(across(c(id, fips, zcta), as.factor)) 
@@ -392,7 +416,7 @@ pm
 
 ```{r}
 set.seed(1234) # same seed as before
-pm_split <- rsample::initial_split(data = pm, prop = 2/3)
+pm_split <- rsample::initial_split(data = pm, prop = 0.7)
 pm_split
 ```
 
@@ -532,7 +556,7 @@ pm_clim
 
 ```{r}
 set.seed(1234) # same seed as before
-pm_split <- rsample::initial_split(data = pm_clim, prop = 2/3)
+pm_split <- rsample::initial_split(data = pm_clim, prop = 0.7)
 pm_split
 ```
 
@@ -543,7 +567,7 @@ pm_split
 
 ```{r}
 set.seed(1234)
-vfold_pm <- rsample::vfold_cv(data = train_pm, v = 4)
+vfold_pm <- rsample::vfold_cv(data = train_pm, v = 5)
 vfold_pm
 ```
 
@@ -555,7 +579,7 @@ RF_rec <- recipe(train_pm) |>
     update_role(id, new_role = "id variable") |>
     update_role("fips", new_role = "county id") |>
     step_novel("state") |>
-    step_string2factor("state", "county", "city") |>
+    step_string2factor("state", "county", "city", "climate_region") |>
     step_rm("county") |>
     step_rm("zcta") |>
     step_corr(all_numeric())|>
@@ -621,7 +645,7 @@ n_cores
 doParallel::registerDoParallel(cores = n_cores)
 
 set.seed(123)
-tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 20)
+tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 30)
 tune_RF_results
 ```
 

@@ -2304,7 +2304,11 @@ preprocessing recipe and the tunable Random Forest model.</p>
 ## Computational engine: randomForest</code></pre>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>n_cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
 <span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>n_cores</span></code></pre></div>
+<<<<<<< HEAD
 <pre><code>## [1] 128</code></pre>
+=======
+<pre><code>## [1] 256</code></pre>
+>>>>>>> 17787a2f9fb1d84bedf48478b1d53767f027b0be
 <p>We performed hyperparameter tuning for the Random Forest model within
 the <code>RF_tune_wflow</code> workflow using grid search. It evaluates
 the model using the vfold_pm cross-validation object (which contains 4
@@ -2579,7 +2583,11 @@ included as a factor.</p>
 ## Computational engine: randomForest</code></pre>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a>n_cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
 <span id="cb68-2"><a href="#cb68-2" tabindex="-1"></a>n_cores</span></code></pre></div>
+<<<<<<< HEAD
 <pre><code>## [1] 128</code></pre>
+=======
+<pre><code>## [1] 256</code></pre>
+>>>>>>> 17787a2f9fb1d84bedf48478b1d53767f027b0be
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>(<span class="at">cores =</span> n_cores)</span>
 <span id="cb70-2"><a href="#cb70-2" tabindex="-1"></a></span>
 <span id="cb70-3"><a href="#cb70-3" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>

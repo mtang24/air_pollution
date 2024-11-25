@@ -280,9 +280,18 @@ We brainstormed that another factor that could add another layer of accuracy to 
 
 ```{r}
 #Correlation Matrix between Urbancity and Log NEI Emissions
-select(pm, matches("nei|urc")) |>
-  GGally::ggcorr(hjust = .85, size = 3,
-                 layout.exp=2, label = TRUE)
+ggcorr(select(pm, matches("nei|urc")), 
+       hjust = .85, 
+       size = 3, 
+       layout.exp = 2, 
+       label = TRUE) + 
+  labs(title = "Correlation Between Urbanicity and PM 2.5 & PM 10 Levels",
+       subtitle = "Log NEI Emissions from Major Sources within 10,000m, 15,000m, and 25,000m Radii\nfor 2006 and 2013 Urban-Rural Classifications"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 15, face = "bold"),
+    plot.subtitle = element_text(size = 12))
 ```
 
 The shaded blue areas highlight a negative correlation between the urbanicity (urc) and log NEI emissions (log_nei). The negative correlation means that as urbanicity decreases (from urban to rural), emission levels tend to decrease as well. This finding is expected given that urban environments are typically more industrialized, densely populated, and often have higher vehicle traffic—all contributing to elevated pollution levels.
@@ -303,26 +312,32 @@ pm_long_urc <- pm |>
 #Facet Labels
 facet_labels <- list(
   log_nei = c(
-    "log_nei_pm25_10000m" = "PM2.5 (10,000m radius)",
-    "log_nei_pm25_15000m" = "PM2.5 (15,000m radius)",
-    "log_nei_pm25_25000m" = "PM2.5 (25,000m radius)"),
+    "log_nei_pm25_10000m" = "10,000m",
+    "log_nei_pm25_15000m" = "15,000m",
+    "log_nei_pm25_25000m" = "25,000m"),
   urc_year = c(
-    "urc2006" = "2006 Urban-Rural Classification",
-    "urc2013" = "2013 Urban-Rural Classification"))
+    "urc2006" = "2006 Classification",
+    "urc2013" = "2013 Classification"))
 
 #Faceted Boxplots for both urbanicity years and emission levels
 ggplot(pm_long_urc, aes(x = urbanicity, y = emissions)) +
   geom_boxplot(aes(color = factor(urbanicity))) +
-  labs(x = "Urbanicity (1 = Most Urban, 6 = Most Rural)", y = "Log NEI Emissions") +
-  facet_wrap(~ urc_year + 
-               log_nei, labeller = labeller(urc_year = as_labeller(facet_labels$urc_year),
+  labs(x = "Urbanicity (1 = Most Urban, 6 = Most Rural)", y = "Log NEI Emissions",
+       title = "PM2.5 Levels by Urban-Rural Classifications",
+    subtitle = "Log NEI Emissions from Major Sources within 10,000m, 15,000m, and 25,000m Radii\nfor 2006 and 2013 Urban-Rural Classifications") +
+  facet_wrap(~ urc_year + log_nei, 
+             labeller = labeller(urc_year = as_labeller(facet_labels$urc_year),
                                             log_nei = as_labeller(facet_labels$log_nei))) +
   scale_x_continuous(breaks = 1:6) +
+    scale_colour_manual(values = blue_gradient) +
   guides(color = "none") +
   theme_minimal() +
   theme(
-    strip.text.x = element_text(size = 10, hjust = 1),
-    axis.text.x = element_text(size = 8))
+    strip.text.x = element_text(size = 10, hjust = 0.5),
+    axis.text.x = element_text(size = 8),
+    plot.title = element_text(size = 15, face = "bold"), 
+    plot.subtitle = element_text(size = 12))
+
 ```
 
 From these boxplots, we observe a clear decrease in average emissions as urbanicity levels decrease (from urban to rural), further reinforcing the idea that urban counties contribute more significantly to pollution.

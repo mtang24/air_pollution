@@ -167,28 +167,9 @@ pm <- pm |>
   mutate(climate_region = recode(state, !!!climate_regions))
 ```
 
+To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrands.  
+
 ```{r}
-# Vivian's EDA
-# Creating a new column based on the placement of the monitor relative to the 40 degree latitude line
-pm <- pm |>
-  mutate(n_or_s = case_when(
-    lat >= 40 ~ "north",
-    lat < 40 ~ "south"
-  ))
-pm %>% 
-  ggplot(aes(y = CMAQ, x = n_or_s)) +
-  geom_boxplot()
-
-# Creating a new column based on the placement of the monitor relative to the 100 degree longitude line
-pm <- pm |>
-  mutate(e_or_w = case_when(
-    lon >= -100 ~ "east",
-    lon < -100 ~ "west"
-  ))
-pm %>% 
-  ggplot(aes(y = CMAQ, x = e_or_w)) +
-  geom_boxplot()
-
 # Creating a new column based on the quadrant of the US the monitor is in
 pm <- pm |>
   mutate(quadrant = case_when(
@@ -199,7 +180,11 @@ pm <- pm |>
   ))
 pm %>% 
   ggplot(aes(y = CMAQ, x = quadrant)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(title = "Lowest CMAQ Levels in Northwestern Quadrant",
+       x = "Quadrant of the U.S.")
+  theme_minimal() +
+  theme(plot.title.position = "plot")
 ```
 
 ```{r}

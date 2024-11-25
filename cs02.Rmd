@@ -228,6 +228,7 @@ pm_quad %>%
   geom_boxplot()
 ```
 
+
 ```{r}
 pm_dens <- pm |> 
   mutate(id = as.character(id))
@@ -239,7 +240,7 @@ pm_long <- pm_dens |>
   pivot_longer(2:4)
 ```
 
-```{r}
+```{r} 
 plot_popdens_zcta <- {
   pm_long |> 
     ggplot(aes(x = popdens_zcta, y = value)) + 
@@ -252,7 +253,7 @@ plot_popdens_zcta <- {
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_popdens_zcta
+plot_popdens_zcta # Probably delete my plots
 ```
 
 ```{r}
@@ -406,12 +407,14 @@ select(log_nei_2008_pm25_sum_10000, popdens_county,
 
 ## Analysis
 
-PM model without climate regions
+To create the first model without climate regions as a factor, we used the `pm` dataset. First, `id`, `fips`, and `zcta` were coded as factors, to ensure they were treated as categorical variables in the model.
 
 ```{r}
 pm <- pm |>
   mutate(across(c(id, fips, zcta), as.factor)) 
 ```
+
+In addition, we created modified the `city` column, classifying locations as either "In a city" or "Not in a city" based on the original `city` column values.
 
 ```{r}
 pm <- pm |>
@@ -426,16 +429,32 @@ pm_split <- rsample::initial_split(data = pm, prop = 0.7)
 pm_split
 ```
 
+We splitted our data into training and testing subsets, with 70% of the data allocated to the training set and the remaining 30% reserved for testing.
+
 ```{r}
  train_pm <- rsample::training(pm_split)
  test_pm <- rsample::testing(pm_split)
 ```
+
+Next, we created a 4-fold cross-validation object from the `train_pm` dataset to divide the training data into four subsets (folds) for cross-validation, enabling model performance evaluation across multiple splits.
 
 ```{r}
 set.seed(1234)
 vfold_pm <- rsample::vfold_cv(data = train_pm, v = 4)
 vfold_pm
 ```
+
+We then defined a preprocessing recipe, `RF_rec`, to prepare the `train_pm` dataset for training a Random Forest model by cleaning and optimizing the features.
+
+- assigning roles:
+  - `everything()`, i.e., all variables are first assigned the role of "predictor" for model input variables.
+  - `value` was reassigned as the response/outcome variable
+  - `id` was reassigned as the "id variable" to uniquely identify observations
+  - "fips" was reassigned with the role of "county id."
+
+- we used `step_novel("state")` to prepare the model to handle any unseen levels in the state variable during cross validation
+
+- we converted categorical columns into factors, dropped the unnecessary categorical features, and removed variables that are highly correlated or have near-zero variance
 
 
 ```{r}
@@ -451,6 +470,8 @@ RF_rec <- recipe(train_pm) |>
     step_corr(all_numeric())|>
     step_nzv(all_numeric())
 ```
+
+We used a workflow to combine the preprocessing recipe and the predictive model steps for streamlined modeling.
 
 ```{r}
 RF_PM_model <- parsnip::rand_forest(mtry = 10, min_n = 3) |> 
@@ -468,11 +489,15 @@ RF_wflow <- workflows::workflow() |>
 RF_wflow
 ```
 
+We fit the `RF_wflow` workflow to the training dataset, `train_pm`.
+
 ```{r}
 RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
 
 RF_wflow_fit
 ```
+
+We generated a variable importance plot for the fitted Random Forest model. 
 
 ```{r}
 RF_wflow_fit |> 
@@ -480,11 +505,15 @@ RF_wflow_fit |>
   vip::vip(num_features = 10)
 ```
 
+We performed cross-validation and collects the performance metrics for the `RF_wflow` workflow using the `vfold_pm` cross-validation object
+
 ```{r}
 set.seed(456)
 resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
 collect_metrics(resample_RF_fit)
 ```
+
+We defined a `rand_forest` model with hyperparameters that will be tuned.
 
 ```{r}
 tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
@@ -493,6 +522,8 @@ tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
     
 tune_RF_model
 ```
+
+We defined a workflow, `RF_tune_wflow`, that combines the preprocessing recipe and the tunable Random Forest model.
 
 ```{r}
 RF_tune_wflow <- workflows::workflow() |>
@@ -507,6 +538,8 @@ n_cores <- parallel::detectCores()
 n_cores
 ```
 
+We performed hyperparameter tuning for the Random Forest model within the `RF_tune_wflow` workflow using grid search. It evaluates the model using the vfold_pm cross-validation object (which contains 4 folds) and tests a grid of 20 different combinations of hyperparameters.
+
 ```{r}
 doParallel::registerDoParallel(cores = n_cores)
 
@@ -514,6 +547,8 @@ set.seed(123)
 tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 20)
 tune_RF_results
 ```
+
+We collected the performance metrics from the hyperparameter tuning process stored in `tune_RF_results`.
 
 ```{r}
 tune_RF_results |>
@@ -524,10 +559,14 @@ tune_RF_results |>
 show_best(tune_RF_results, metric = "rmse", n = 1)
 ```
 
+We selected the best hyperparameter combination based on the root mean square error (RMSE) from the results of the hyperparameter tuning process.
+
 ```{r}
 tuned_RF_values <- select_best(tune_RF_results,  metric = "rmse")
 tuned_RF_values
 ```
+
+We finalized the Random Forest workflow by applying the best hyperparameters identified through grid search. The model was then trained and evaluated on both the training and test datasets using the last_fit() function. Finally, performance metrics such as R^2 and RMSE are collected.
 
 ```{r}
 # specify best combination from tune in workflow
@@ -546,7 +585,7 @@ test_predictions <- collect_predictions(overallfit)
 test_predictions
 ```
 
-PM model with climate regions
+To create the second model that includes climate regions as a factor, we used the `pm_clim` dataset. We followed the same steps, except for some changes that are noted.
 
 ```{r}
 pm_clim <- pm_clim |>
@@ -571,12 +610,15 @@ pm_split
  test_pm <- rsample::testing(pm_split)
 ```
 
+A 5-fold cross-validation object is created from the `train_pm` dataset to divide the training data into five subsets for cross-validation. Increasing v to 5 enabled higher test accuracy on the final model.
+
 ```{r}
 set.seed(1234)
 vfold_pm <- rsample::vfold_cv(data = train_pm, v = 5)
 vfold_pm
 ```
 
+When creating the recipe, we ensured `climate_region` was included as a factor.
 
 ```{r}
 RF_rec <- recipe(train_pm) |>
@@ -626,6 +668,8 @@ resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
 collect_metrics(resample_RF_fit)
 ```
 
+We now see a slightly improved R^2 value.
+
 ```{r}
 tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
   set_engine("randomForest") |>
@@ -646,6 +690,8 @@ RF_tune_wflow
 n_cores <- parallel::detectCores()
 n_cores
 ```
+
+We performed hyperparameter tuning for the Random Forest model using an increased grid of 30, allowing us to explore a broader range of hyperparameter combinations and improve the model's performance by identifying more optimal configurations
 
 ```{r}
 doParallel::registerDoParallel(cores = n_cores)
@@ -680,6 +726,8 @@ overallfit <- RF_wflow |>
 
 collect_metrics(overallfit)
 ```
+
+We now see a slightly improved R^2 value on the test data.
 
 ```{r}
 test_predictions <- collect_predictions(overallfit)

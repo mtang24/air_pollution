@@ -13,6 +13,15 @@ output:
 
 ## Introduction
 
+Air pollution is a pressing environmental issue, with various types of pollutants affecting air quality. Among these, fine particulate matter (PM2.5)—particles smaller than 2.5 µm in diameter—is particularly harmful [^1]. Exposure to PM2.5 is linked to severe health problems, and some regions in the United States experience pollution levels that exceed the World Health Organization's recommended limits [^2] [^3]. 
+
+Accurately predicting annual average air pollution concentrations in the U.S. has significant benefits, such as informing public health initiatives and guiding policy decisions. While traditional air pollution measurement methods provide valuable data, their uneven distribution nationwide and limited coverage of PM2.5 levels create gaps in understanding [^4]. To address this problem, we use machine learning to develop a model aimed at improving the accuracy of air pollution predictions. This model also incorporates climate region as a factor to account for geographic variability, seeking to enhance prediction accuracy, especially in regions with sparse monitor coverage.
+
+[^1]: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
+[^2]: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
+[^3]: https://www.stateofglobalair.org/sites/default/files/soga_2019_fact_sheet.pdf
+[^4]: https://ehjournal.biomedcentral.com/articles/10.1186/1476-069X-13-63
+
 ```{r setup, include=FALSE}
 # control global Rmd chunk settings
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
@@ -21,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ## Questions
 
 -   With what accuracy can we predict US annual average air pollution concentrations?
--   Extension question
+-   How does incorporating a climate region category affect the accuracy of PM2.5 concentration predictions?
 
 ### Load packages
 
@@ -37,8 +46,6 @@ library(GGally)
 Our data comes from the US Environmental Protection Agency (EPA), the National Aeronautics and Space Administration (NASA), the US Census, and the National Center for Health Statistics (NCHS).
 
 It contains 48 features (variables) with values for each of the 876 monitors (observations).
-
- 
 
 ##### The features are:
 
@@ -109,6 +116,10 @@ pm <- read_csv("data/pm25_data.csv")
 
 ### Data Wrangling and EDA
 
+After importing our data, we added an additional column called `climate_region` that assigns one of nine climate regions based on the state the monitor is located in. These climate regions are defined as "climatically consistent regions within the contiguous United States which are useful for putting current climate anomalies into a historical perspective" by the National Centers for Environmental Information [^5]. 
+
+[^5]: https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions
+
 ```{r}
 climate_regions <- c(
   "Connecticut" = "Northeast",
@@ -163,22 +174,62 @@ climate_regions <- c(
 )
 
 # Add a new column with region labels
-pm <- pm |>
+pm_clim <- pm |>
   mutate(climate_region = recode(state, !!!climate_regions))
 ```
 
+<<<<<<< HEAD
 To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrands.  
 
 ```{r}
+=======
+The boxplot below illustrates PM2.5 concentrations across the nine climate regions, showcasing the varying levels of air pollution experienced in each region.
+
+```{r}
+pm_clim |>
+  ggplot(aes(x = climate_region, y = value, fill = climate_region)) + 
+    geom_boxplot() + 
+    theme_classic() + 
+    labs(title = "Distribution of PM2.5 Concentrations by Climate Region", 
+         x = "Climate Region", 
+         y = "Value") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+```
+
+
+```{r}
+# Vivian's EDA
+# Creating a new column based on the placement of the monitor relative to the 40 degree latitude line
+pm_quad <- pm |>
+  mutate(n_or_s = case_when(
+    lat >= 40 ~ "north",
+    lat < 40 ~ "south"
+  ))
+pm_quad %>% 
+  ggplot(aes(y = CMAQ, x = n_or_s)) +
+  geom_boxplot()
+
+# Creating a new column based on the placement of the monitor relative to the 100 degree longitude line
+pm_quad <- pm_quad |>
+  mutate(e_or_w = case_when(
+    lon >= -100 ~ "east",
+    lon < -100 ~ "west"
+  ))
+pm_quad %>% 
+  ggplot(aes(y = CMAQ, x = e_or_w)) +
+  geom_boxplot()
+
+>>>>>>> c9d800cd6aab11608f3533527fa273645ade40fe
 # Creating a new column based on the quadrant of the US the monitor is in
-pm <- pm |>
+pm_quad <- pm_quad |>
   mutate(quadrant = case_when(
     lon >= -100 & lat >= 40 ~ "northeast",
     lon >= -100 & lat < 40 ~ "southeast",
     lon < -100 & lat >= 40 ~ "northwest",
     lon < -100 & lat < 40 ~ "southwest"
   ))
-pm %>% 
+pm_quad %>% 
   ggplot(aes(y = CMAQ, x = quadrant)) +
   geom_boxplot() +
   labs(title = "Lowest CMAQ Levels in Northwestern Quadrant",
@@ -187,18 +238,19 @@ pm %>%
   theme(plot.title.position = "plot")
 ```
 
+
 ```{r}
-pm <- pm |> 
+pm_dens <- pm |> 
   mutate(id = as.character(id))
 ```
 
 ```{r}
-pm_long <- pm |> 
+pm_long <- pm_dens |> 
   select(1:2, CMAQ, aod, everything()) |>
   pivot_longer(2:4)
 ```
 
-```{r}
+```{r} 
 plot_popdens_zcta <- {
   pm_long |> 
     ggplot(aes(x = popdens_zcta, y = value)) + 
@@ -211,7 +263,7 @@ plot_popdens_zcta <- {
       theme(strip.background = element_blank(),
             plot.title.position = "plot")
 }
-plot_popdens_zcta
+plot_popdens_zcta # Probably delete my plots
 ```
 
 ```{r}
@@ -266,18 +318,18 @@ plot_popdens_county
 
 ```{r}
 # Maddy's EDA
-pm <- pm |> 
+pm_cl <- pm |> 
   mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
 
-ggplot(pm, aes(x = pop_density_cluster, y = value)) +
+ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "pink") +
   labs(title = "PM2.5 Levels by Population Density Clusters",
        x = "Population Density Cluster",
        y = "PM2.5 Levels")
 
 
-ggplot(pm, aes(x = pop_density_cluster, y = value)) +
+ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "green") + facet_wrap(~state) +
   labs(title = "PM2.5 Levels by Population Density Clusters and State",
        x = "Population Density Cluster",
@@ -365,73 +417,331 @@ select(log_nei_2008_pm25_sum_10000, popdens_county,
 
 ## Analysis
 
+To create the first model without climate regions as a factor, we used the `pm` dataset. First, `id`, `fips`, and `zcta` were coded as factors, to ensure they were treated as categorical variables in the model.
+
 ```{r}
-linear_reg()
+pm <- pm |>
+  mutate(across(c(id, fips, zcta), as.factor)) 
+```
 
-lin_mod <- linear_reg() |>
-  set_engine("lm") # lm: linear model
+In addition, we created modified the `city` column, classifying locations as either "In a city" or "Not in a city" based on the original `city` column values.
 
-# fit model
-mod_cmaq_value <- lin_mod |>
-  fit(value ~ CMAQ, data = pm) 
-
-# display results
-mod_cmaq_value |>
-  tidy()
+```{r}
+pm <- pm |>
+  mutate(city = case_when(city == "Not in a city" ~ "Not in a city",
+                          city != "Not in a city" ~ "In a city"))
+pm
 ```
 
 ```{r}
-pm <- pm |> 
-  mutate(popdens = case_when(
-    popdens_zcta >= median(pm$popdens_zcta) ~ "hi",
-    popdens_zcta < median(pm$popdens_zcta) ~ "low"          
-  ))
+set.seed(1234) # same seed as before
+pm_split <- rsample::initial_split(data = pm, prop = 0.7)
+pm_split
+```
 
-# Fit model with main effects
-pm_main_fit <- lin_mod |>
-  fit(value ~ CMAQ + popdens, data = pm)
+We splitted our data into training and testing subsets, with 70% of the data allocated to the training set and the remaining 30% reserved for testing.
 
-pm_main_fit |> tidy()
+```{r}
+ train_pm <- rsample::training(pm_split)
+ test_pm <- rsample::testing(pm_split)
+```
 
-# Display model
-pm_main_fit |>
-  tidy() |> 
-  mutate(exp_estimate = exp(estimate)) |>
-  select(term, estimate, exp_estimate)
+Next, we created a 4-fold cross-validation object from the `train_pm` dataset to divide the training data into four subsets (folds) for cross-validation, enabling model performance evaluation across multiple splits.
 
-# Display adj. R-squared
-glance(pm_main_fit)$adj.r.squared
+```{r}
+set.seed(1234)
+vfold_pm <- rsample::vfold_cv(data = train_pm, v = 4)
+vfold_pm
+```
+
+We then defined a preprocessing recipe, `RF_rec`, to prepare the `train_pm` dataset for training a Random Forest model by cleaning and optimizing the features.
+
+- assigning roles:
+  - `everything()`, i.e., all variables are first assigned the role of "predictor" for model input variables.
+  - `value` was reassigned as the response/outcome variable
+  - `id` was reassigned as the "id variable" to uniquely identify observations
+  - "fips" was reassigned with the role of "county id."
+
+- we used `step_novel("state")` to prepare the model to handle any unseen levels in the state variable during cross validation
+
+- we converted categorical columns into factors, dropped the unnecessary categorical features, and removed variables that are highly correlated or have near-zero variance
+
+
+```{r}
+RF_rec <- recipe(train_pm) |>
+    update_role(everything(), new_role = "predictor")|>
+    update_role(value, new_role = "outcome")|>
+    update_role(id, new_role = "id variable") |>
+    update_role("fips", new_role = "county id") |>
+    step_novel("state") |>
+    step_string2factor("state", "county", "city") |>
+    step_rm("county") |>
+    step_rm("zcta") |>
+    step_corr(all_numeric())|>
+    step_nzv(all_numeric())
+```
+
+We used a workflow to combine the preprocessing recipe and the predictive model steps for streamlined modeling.
+
+```{r}
+RF_PM_model <- parsnip::rand_forest(mtry = 10, min_n = 3) |> 
+  set_engine("randomForest") |>
+  set_mode("regression")
+
+RF_PM_model
 ```
 
 ```{r}
-# Fit model with interaction effects
-pm_int_fit <- lin_mod |>
-  fit(value ~ CMAQ * popdens, data = pm)
+RF_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(RF_PM_model)
 
-# Display adj. R-squared
-glance(pm_int_fit)$adj.r.squared
+RF_wflow
+```
+
+We fit the `RF_wflow` workflow to the training dataset, `train_pm`.
+
+```{r}
+RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
+
+RF_wflow_fit
+```
+
+We generated a variable importance plot for the fitted Random Forest model. 
+
+```{r}
+RF_wflow_fit |> 
+  extract_fit_parsnip() |> 
+  vip::vip(num_features = 10)
+```
+
+We performed cross-validation and collects the performance metrics for the `RF_wflow` workflow using the `vfold_pm` cross-validation object
+
+```{r}
+set.seed(456)
+resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
+collect_metrics(resample_RF_fit)
+```
+
+We defined a `rand_forest` model with hyperparameters that will be tuned.
+
+```{r}
+tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
+  set_engine("randomForest") |>
+  set_mode("regression")
+    
+tune_RF_model
+```
+
+We defined a workflow, `RF_tune_wflow`, that combines the preprocessing recipe and the tunable Random Forest model.
+
+```{r}
+RF_tune_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(tune_RF_model)
+
+RF_tune_wflow
 ```
 
 ```{r}
-# Fit full model using tidymodels
-pm_full <-  lin_mod |>
-  fit(value ~ ., data=pm)
+n_cores <- parallel::detectCores()
+n_cores
+```
 
-# Display adj. R-squared
-#glance(pm_full)$adj.r.squared # Displays wrong value currently?
+We performed hyperparameter tuning for the Random Forest model within the `RF_tune_wflow` workflow using grid search. It evaluates the model using the vfold_pm cross-validation object (which contains 4 folds) and tests a grid of 20 different combinations of hyperparameters.
+
+```{r}
+doParallel::registerDoParallel(cores = n_cores)
+
+set.seed(123)
+tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 20)
+tune_RF_results
+```
+
+We collected the performance metrics from the hyperparameter tuning process stored in `tune_RF_results`.
+
+```{r}
+tune_RF_results |>
+  collect_metrics()
 ```
 
 ```{r}
-# Backward selection: fit model with a few columns
-# mod <- lm(value ~ log_pri_length_25000 + log_prisec_length_15000 +
-#           log_nei_2008_pm25_sum_15000 , data=pm)
-# ols_step_backward_p(mod)
+show_best(tune_RF_results, metric = "rmse", n = 1)
+```
+
+We selected the best hyperparameter combination based on the root mean square error (RMSE) from the results of the hyperparameter tuning process.
+
+```{r}
+tuned_RF_values <- select_best(tune_RF_results,  metric = "rmse")
+tuned_RF_values
+```
+
+We finalized the Random Forest workflow by applying the best hyperparameters identified through grid search. The model was then trained and evaluated on both the training and test datasets using the last_fit() function. Finally, performance metrics such as R^2 and RMSE are collected.
+
+```{r}
+# specify best combination from tune in workflow
+RF_tuned_wflow <-RF_tune_wflow |>
+  tune::finalize_workflow(tuned_RF_values)
+
+# fit model with those parameters on train AND test
+overallfit <- RF_wflow |>
+  tune::last_fit(pm_split)
+
+collect_metrics(overallfit)
 ```
 
 ```{r}
-# Backward selection: fit full model
-#mod_full <- lm(value ~ ., data=pm)
-# ols_step_backward_p(mod_full) # error running
+test_predictions <- collect_predictions(overallfit)
+test_predictions
+```
+
+To create the second model that includes climate regions as a factor, we used the `pm_clim` dataset. We followed the same steps, except for some changes that are noted.
+
+```{r}
+pm_clim <- pm_clim |>
+  mutate(across(c(id, fips, zcta), as.factor)) 
+```
+
+```{r}
+pm_clim <- pm_clim |>
+  mutate(city = case_when(city == "Not in a city" ~ "Not in a city",
+                          city != "Not in a city" ~ "In a city"))
+pm_clim
+```
+
+```{r}
+set.seed(1234) # same seed as before
+pm_split <- rsample::initial_split(data = pm_clim, prop = 0.7)
+pm_split
+```
+
+```{r}
+ train_pm <- rsample::training(pm_split)
+ test_pm <- rsample::testing(pm_split)
+```
+
+A 5-fold cross-validation object is created from the `train_pm` dataset to divide the training data into five subsets for cross-validation. Increasing v to 5 enabled higher test accuracy on the final model.
+
+```{r}
+set.seed(1234)
+vfold_pm <- rsample::vfold_cv(data = train_pm, v = 5)
+vfold_pm
+```
+
+When creating the recipe, we ensured `climate_region` was included as a factor.
+
+```{r}
+RF_rec <- recipe(train_pm) |>
+    update_role(everything(), new_role = "predictor")|>
+    update_role(value, new_role = "outcome")|>
+    update_role(id, new_role = "id variable") |>
+    update_role("fips", new_role = "county id") |>
+    step_novel("state") |>
+    step_string2factor("state", "county", "city", "climate_region") |>
+    step_rm("county") |>
+    step_rm("zcta") |>
+    step_corr(all_numeric())|>
+    step_nzv(all_numeric())
+```
+
+```{r}
+RF_PM_model <- parsnip::rand_forest(mtry = 10, min_n = 3) |> 
+  set_engine("randomForest") |>
+  set_mode("regression")
+
+RF_PM_model
+```
+
+```{r}
+RF_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(RF_PM_model)
+
+RF_wflow
+```
+
+```{r}
+RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
+
+RF_wflow_fit
+```
+
+```{r}
+RF_wflow_fit |> 
+  extract_fit_parsnip() |> 
+  vip::vip(num_features = 10)
+```
+
+```{r}
+set.seed(456)
+resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
+collect_metrics(resample_RF_fit)
+```
+
+We now see a slightly improved R^2 value.
+
+```{r}
+tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
+  set_engine("randomForest") |>
+  set_mode("regression")
+    
+tune_RF_model
+```
+
+```{r}
+RF_tune_wflow <- workflows::workflow() |>
+  workflows::add_recipe(RF_rec) |>
+  workflows::add_model(tune_RF_model)
+
+RF_tune_wflow
+```
+
+```{r}
+n_cores <- parallel::detectCores()
+n_cores
+```
+
+We performed hyperparameter tuning for the Random Forest model using an increased grid of 30, allowing us to explore a broader range of hyperparameter combinations and improve the model's performance by identifying more optimal configurations
+
+```{r}
+doParallel::registerDoParallel(cores = n_cores)
+
+set.seed(123)
+tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 30)
+tune_RF_results
+```
+
+```{r}
+tune_RF_results |>
+  collect_metrics()
+```
+
+```{r}
+show_best(tune_RF_results, metric = "rmse", n = 1)
+```
+
+```{r}
+tuned_RF_values <- select_best(tune_RF_results,  metric = "rmse")
+tuned_RF_values
+```
+
+```{r}
+# specify best combination from tune in workflow
+RF_tuned_wflow <-RF_tune_wflow |>
+  tune::finalize_workflow(tuned_RF_values)
+
+# fit model with those parameters on train AND test
+overallfit <- RF_wflow |>
+  tune::last_fit(pm_split)
+
+collect_metrics(overallfit)
+```
+
+We now see a slightly improved R^2 value on the test data.
+
+```{r}
+test_predictions <- collect_predictions(overallfit)
+test_predictions
 ```
 
 ```{r}
@@ -480,16 +790,6 @@ RF_wflow_fit |>
   extract_fit_parsnip() |> 
   vip::vip(num_features = 10)
 ```
-
-
-```{r}
-
-```
-
-```{r}
-
-```
-
 
 ## Results & Discussion
 

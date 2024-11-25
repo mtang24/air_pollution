@@ -1,6 +1,6 @@
 ---
 title: "CS02 - Predicting Annual Air Pollution"
-author: "Michael Tang, Vivian Lee, Jennifer Kim, Madeleine Jimenez, and Hsiang-An Pao"
+author: "Madeleine Jimenez, Jennifer Kim, Vivian Lee, Hsiang-An Pao, Michael Tang"
 output: 
   html_document:
     toc: true
@@ -162,6 +162,8 @@ pm <- pm |>
 ```
 
 After importing our data, we added an additional column called `climate_region` that assigns one of nine climate regions based on the state the monitor is located in. These climate regions are defined as "climatically consistent regions within the contiguous United States which are useful for putting current climate anomalies into a historical perspective" by the National Centers for Environmental Information [^5]. 
+
+![[U.S. Climate Regions Map (National Centers for Environmental Information)](https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions)](climate_regions.png)
 
 [^5]: https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions
 
@@ -699,3 +701,5 @@ RF_wflow_fit |>
 ## Results & Discussion
 
 ## Conclusion
+
+In conclusion, we successfully predicted the annual concentration of air pollution with an accuracy of 61.9%. When factoring in climate regions, our model achieved even higher accuracy, reaching approximately 62.6%. This could show that regional climate factors are influential in understanding air pollution patterns. Analyzing feature importance reveals that the variable “state” holds the highest significance, highlighting its critical role in determining pollution levels. This suggests that geographic factors are critical in determining our air quality…

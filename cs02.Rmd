@@ -332,44 +332,45 @@ select(log_nei_2008_pm25_sum_10000, popdens_county) |>
   GGally::ggpairs()
 ```
 
+
+
+We brainstormed that another factor that could add another layer of accuracy to predicting air pollution concentrations would be observing whether how urban counties are impact pollution levels. To visualize the potential correlation between urbanicity and emissions, we utilized a correlation matrix plot:  
+
+
 ```{r}
+#Correlation Matrix between Urbancity and Log NEI Emissions
 select(pm, matches("nei|urc")) |>
   GGally::ggcorr(hjust = .85, size = 3,
                  layout.exp=2, label = TRUE)
 ```
 
+The shaded blue areas highlight a negative correlation between the urbanicity (urc) and log NEI emissions (log_nei). The negative correlation means that as urbanicity decreases (from urban to rural), emission levels tend to decrease as well. This finding is expected given that urban environments are typically more industrialized, densely populated, and often have higher vehicle traffic—all contributing to elevated pollution levels.
+
+
+Since there seems to be a correlation between urbanicity and emission levels, we employed sets of boxplots to examine the data more closely. As a reminder, the urbanicity measure spans 6 categorical values with 1 most urban and 6 being rural. 
+
 ```{r}
-# Scatterplot for Urbanicity (urc2006) vs Emissions (log_nei_2008_pm25_sum_10000) for 2006
-ggplot(pm, aes(x = urc2006, y = log_nei_2008_pm25_sum_10000)) +
-  geom_point(aes(color = log_nei_2008_pm25_sum_10000), alpha = 0.7) +
-  theme_minimal()
+#Reshaped Log NEI Emission and Urbanicity values to long format for easier faceting
+pm_long_urc <- pm |>
+  pivot_longer(cols = starts_with("log_nei_2008_pm25_sum_"), 
+               names_to = "log_nei", 
+               values_to = "emissions") |>
+  pivot_longer(cols = starts_with("urc"), 
+               names_to = "urc_year", 
+               values_to = "urbanicity")
 
-# Scatterplot for Urbanicity (urc2006) vs Emissions (log_nei_2008_pm25_sum_15000) for 2006
-ggplot(pm, aes(x = urc2006, y = log_nei_2008_pm25_sum_15000)) +
-  geom_point(aes(color = log_nei_2008_pm25_sum_15000), alpha = 0.7) +
+#Faceted Boxplots for both urbanicity years and emission levels
+ggplot(pm_long_urc, aes(x = urbanicity, y = emissions)) +
+  geom_boxplot(aes(color = factor(urbanicity))) +
+  theme_minimal() +
+  labs(x = "Urbanicity", y = "Log NEI Emissions") +
+  facet_wrap(~ urc_year + log_nei) +
   theme_minimal()
-
-# Scatterplot for Urbanicity (urc2006) vs Emissions (log_nei_2008_pm25_sum_25000) for 2006
-ggplot(pm, aes(x = urc2006, y = log_nei_2008_pm25_sum_25000)) +
-  geom_point(aes(color = log_nei_2008_pm25_sum_25000), alpha = 0.7) +
-  theme_minimal()
-
-# Scatterplot for Urbanicity (urc2013) vs Emissions (log_nei_2008_pm25_sum_10000) for 2013
-ggplot(pm, aes(x = urc2013, y = log_nei_2008_pm25_sum_10000)) +
-  geom_point(aes(color = log_nei_2008_pm25_sum_10000), alpha = 0.7) +
-  theme_minimal()
-
-# Scatterplot for Urbanicity (urc2013) vs Emissions (log_nei_2008_pm25_sum_15000) for 2013
-ggplot(pm, aes(x = urc2013, y = log_nei_2008_pm25_sum_15000)) +
-  geom_point(aes(color = log_nei_2008_pm25_sum_15000), alpha = 0.7) +
-  theme_minimal()
-
-# Scatterplot for Urbanicity (urc2013) vs Emissions (log_nei_2008_pm25_sum_25000) for 2013
-ggplot(pm, aes(x = urc2013, y = log_nei_2008_pm25_sum_25000)) +
-  geom_point(aes(color = log_nei_2008_pm25_sum_25000), alpha = 0.7) +
-  theme_minimal()
-
 ```
+
+From these boxplots, we observe a clear decrease in average emissions as urbanicity levels decrease (from urban to rural), further reinforcing the idea that urban counties contribute more significantly to pollution.
+
+
 
 ## Analysis
 

@@ -81,7 +81,7 @@ It contains 48 features (variables) with values for each of the 876 monitors (ob
     -   Highway or major road
 -   **log_pri_5000m, log_pri_10000m, log_pri_15000m, log_pri_25000m** \| Count of primary road length in meters in a circle with a radius of 5000, 10000, 15000, and 25000 meters respectively around the monitor (Natural log)
     -   Highways only
--   **log_prisec_500m, log_prisec_1000m, log_prisec_length_5000, log_prisec_10000m, log_prisec_15000m, log_prisec_25000m** \| Count of primary and secondary road length in meters in a circle with a radius of 500, 1000, 5000, 10000, 15000, 25000 meters around the monitor (Natural log)
+-   **log_prisec_500m, log_prisec_1000m, log_prisec_5000m, log_prisec_10000m, log_prisec_15000m, log_prisec_25000m** \| Count of primary and secondary road length in meters in a circle with a radius of 500, 1000, 5000, 10000, 15000, 25000 meters around the monitor (Natural log)
     -   Highway and secondary roads
 -   **log_nei_pm25_10000m, log_nei_pm25_15000m, log_nei_pm25_25000m** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
     -   Fine Particulate Matter (diameter 2.5 µm)
@@ -120,6 +120,9 @@ To preface, we renamed certain lengthy variables for ease of viewing and consist
 ```{r}
 pm <- pm |>
   rename( 
+    
+    # Distance to a primary or secondary road (Natural Log)
+    log_dist_prisec = Log_dist_to_prisec
     
     # Road lengths (Natural Log) - Primary roads
     log_pri_5000m = log_pri_length_5000,

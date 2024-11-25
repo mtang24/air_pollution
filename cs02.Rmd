@@ -293,6 +293,8 @@ plot_popdens_county <- {
 plot_popdens_county
 ```
 
+The following visualizations show PM2.5 levels based on population density, one visualization is divided by both state and population density. From the box plots you can see that high population density has very consistent PM 2.5 levels as there are no outliers and the pink box is very thin while the low population density has a bigger pink box and several outliers. Through the second visualization you can also see how each state's PM2.5 levels differ. 
+
 ```{r}
 # Maddy's EDA
 pm_cl <- pm |> 
@@ -367,29 +369,6 @@ ggplot(pm, aes(x = urc2013, y = log_nei_2008_pm25_sum_25000)) +
   geom_point(aes(color = log_nei_2008_pm25_sum_25000), alpha = 0.7) +
   theme_minimal()
 
-```
-
-EDA Visualizations
-
-```{r}
-# imp
-select(pm, contains("imp")) |>
-  GGally::ggpairs()
-```
-
-```{r}
-# pri
-select(pm, contains("pri")) |>
-  GGally::ggcorr(hjust = .85, size = 3,
-       layout.exp=2, label = TRUE)
-```
-
-```{r}
-# nei with population density 
-pm |>
-select(log_nei_2008_pm25_sum_10000, popdens_county, 
-       log_pri_length_10000, imp_a10000, county_pop) |>
-  GGally::ggpairs()
 ```
 
 ## Analysis

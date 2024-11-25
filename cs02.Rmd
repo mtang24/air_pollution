@@ -342,37 +342,14 @@ The following visualizations show PM2.5 levels based on population density, one 
 pm_cl <- pm |> 
   mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
-
 ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "pink") +
   labs(title = "PM2.5 Levels by Population Density Clusters",
        x = "Population Density Cluster",
        y = "PM2.5 Levels")
 
-
-ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
-  geom_boxplot(fill = "green") + facet_wrap(~state) +
-  labs(title = "PM2.5 Levels by Population Density Clusters and State",
-       x = "Population Density Cluster",
-       y = "PM2.5 Levels")
 ```
 
-```{r}
-#Sean's EDA
-#check development correlation
-select(pm, contains("imp")) |>
-  GGally::ggcorr(hjust = .85, size = 3,
-       layout.exp=2, label = TRUE)
-#want to compare education vs. development but was negative
-pm |>
-select(no_hs, popdens_county, 
-       hs_grad, imp_a10000, some_college) |>
-  GGally::ggpairs()
-#population density and emission are correlated
-pm |>
-select(log_nei_pm25_10000m, popdens_county) |>
-  GGally::ggpairs()
-```
 
 We brainstormed that another factor that could add another layer of accuracy to predicting air pollution concentrations would be observing whether how urban counties are impact pollution levels. To visualize the potential correlation between urbanicity and emissions, we utilized a correlation matrix plot:  
 

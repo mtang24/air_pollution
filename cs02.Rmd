@@ -252,9 +252,9 @@ pm_quad %>%
   ggplot(aes(y = CMAQ, x = quadrant)) +
   geom_boxplot() +
   labs(title = "Lowest CMAQ Levels in Northwestern Quadrant",
-       x = "Quadrant of the U.S.")
+       x = "Quadrant of the U.S.") +
   theme_minimal() +
-  theme(plot.title.position = "plot")
+  theme(plot.title.position = "plot") 
 ```
 
 

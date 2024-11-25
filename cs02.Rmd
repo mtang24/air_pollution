@@ -700,6 +700,13 @@ test_predictions <- collect_predictions(overallfit)
 test_predictions
 ```
 
+In using a random forest to find the best model for predicting air quality from our data:
+- Multiple decision trees are created
+- Each tree is built using a random subset of the training data with replacement
+- The randomness helps to keep the algorithm from overfitting the data
+- The mean of the predictions from each of the trees is used in the final output
+
+
 ```{r}
 #split
 set.seed(1234)

@@ -178,8 +178,6 @@ pm_clim <- pm |>
   mutate(climate_region = recode(state, !!!climate_regions))
 ```
 
-
-
 The boxplot below illustrates PM2.5 concentrations across the nine climate regions, showcasing the varying levels of air pollution experienced in each region.
 
 ```{r}
@@ -195,7 +193,6 @@ pm_clim |>
 ```
 
 To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.  
-
 
 ```{r}
 # Creating a new column based on the quadrant of the US the monitor is in
@@ -332,8 +329,6 @@ select(log_nei_2008_pm25_sum_10000, popdens_county) |>
   GGally::ggpairs()
 ```
 
-
-
 We brainstormed that another factor that could add another layer of accuracy to predicting air pollution concentrations would be observing whether how urban counties are impact pollution levels. To visualize the potential correlation between urbanicity and emissions, we utilized a correlation matrix plot:  
 
 
@@ -373,6 +368,8 @@ From these boxplots, we observe a clear decrease in average emissions as urbanic
 
 
 ## Analysis
+
+### Model 1
 
 To create the first model without climate regions as a factor, we used the `pm` dataset. First, `id`, `fips`, and `zcta` were coded as factors, to ensure they were treated as categorical variables in the model.
 
@@ -552,6 +549,8 @@ test_predictions <- collect_predictions(overallfit)
 test_predictions
 ```
 
+### Model 2
+
 To create the second model that includes climate regions as a factor, we used the `pm_clim` dataset. We followed the same steps, except for some changes that are noted.
 
 ```{r}
@@ -658,13 +657,11 @@ n_cores <- parallel::detectCores()
 n_cores
 ```
 
-We performed hyperparameter tuning for the Random Forest model using an increased grid of 30, allowing us to explore a broader range of hyperparameter combinations and improve the model's performance by identifying more optimal configurations
-
 ```{r}
 doParallel::registerDoParallel(cores = n_cores)
 
 set.seed(123)
-tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 30)
+tune_RF_results <- tune_grid(object = RF_tune_wflow, resamples = vfold_pm, grid = 20)
 tune_RF_results
 ```
 

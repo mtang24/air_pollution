@@ -178,11 +178,8 @@ pm_clim <- pm |>
   mutate(climate_region = recode(state, !!!climate_regions))
 ```
 
-<<<<<<< HEAD
-To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrands.  
 
-```{r}
-=======
+
 The boxplot below illustrates PM2.5 concentrations across the nine climate regions, showcasing the varying levels of air pollution experienced in each region.
 
 ```{r}
@@ -197,30 +194,10 @@ pm_clim |>
           legend.position = "none")
 ```
 
+To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.  
+
 
 ```{r}
-# Vivian's EDA
-# Creating a new column based on the placement of the monitor relative to the 40 degree latitude line
-pm_quad <- pm |>
-  mutate(n_or_s = case_when(
-    lat >= 40 ~ "north",
-    lat < 40 ~ "south"
-  ))
-pm_quad %>% 
-  ggplot(aes(y = CMAQ, x = n_or_s)) +
-  geom_boxplot()
-
-# Creating a new column based on the placement of the monitor relative to the 100 degree longitude line
-pm_quad <- pm_quad |>
-  mutate(e_or_w = case_when(
-    lon >= -100 ~ "east",
-    lon < -100 ~ "west"
-  ))
-pm_quad %>% 
-  ggplot(aes(y = CMAQ, x = e_or_w)) +
-  geom_boxplot()
-
->>>>>>> c9d800cd6aab11608f3533527fa273645ade40fe
 # Creating a new column based on the quadrant of the US the monitor is in
 pm_quad <- pm_quad |>
   mutate(quadrant = case_when(

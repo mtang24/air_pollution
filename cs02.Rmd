@@ -199,7 +199,7 @@ To examine the data, we decided to split the monitors into four quadrants accord
 
 ```{r}
 # Creating a new column based on the quadrant of the US the monitor is in
-pm_quad <- pm_quad |>
+pm_quad <- pm |>
   mutate(quadrant = case_when(
     lon >= -100 & lat >= 40 ~ "northeast",
     lon >= -100 & lat < 40 ~ "southeast",

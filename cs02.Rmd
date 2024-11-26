@@ -226,7 +226,7 @@ ggcorr(select(pm, matches("nei|urc")),
     plot.subtitle = element_text(size = 12))
 ```
 
-The shaded blue areas highlight a negative correlation between the urbanicity (urc) and log NEI emissions (log_nei). The negative correlation means that as urbanicity decreases (from urban to rural), emission levels tend to decrease as well. This finding is expected given that urban environments are typically more industrialized, densely populated, and often have higher vehicle traffic—all contributing to elevated pollution levels.
+The shaded blue areas highlight a negative correlation between urbanicity (`urc`) and log NEI emissions (`log_nei`). The negative correlation means that as `urc` increases (from urban to rural), emission levels tend to decrease. This finding is expected given that urban environments are typically more industrialized, densely populated, and often have higher vehicle traffic—all contributing to elevated pollution levels.
 
 Since there seems to be a correlation between urbanicity and emission levels, we employed sets of boxplots to examine the data more closely. As a reminder, the urbanicity measure spans 6 categorical values with 1 most urban and 6 being rural.
 

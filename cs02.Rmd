@@ -160,7 +160,7 @@ pm <- pm |>
     
     # Poverty rate
     poverty = pov,
-    hs_or_less = hs_orless,
+    hs_or_less = hs_orless
 )
 ```
 

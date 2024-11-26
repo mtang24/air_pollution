@@ -208,7 +208,7 @@ ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
 
 ```
 
-We also wanted to examine urbanicity and how the level of urbanization is correlated with different pollution levels. To visualize the potential correlation between urbanicity and emissions, we created a correlation matrix plot:
+We also wanted to examine urbanicity and how the level of urbanization is correlated with different pollution levels. To visualize the potential correlation between urbanicity and emissions, we created a correlation matrix:
 
 ```{r}
 #Correlation Matrix between Urbancity and Log NEI Emissions

@@ -687,6 +687,8 @@ test_predictions
 
 ## Results & Discussion
 
+Our extension of our analysis demonstrated that we can successfully improve model predictions by including the different climate regions of the U.S. as a model predictor.
+
 ## Conclusion
 
 In conclusion, our research showed that we could predict annual air pollution levels with 61.9% accuracy. When we included information about climate regions, the accuracy improved slightly to 62.6%, suggesting that climate factors play a role in understanding air pollution. Our analysis of the data also revealed that the variable "state" was the most important factor, showing how much location affects pollution levels. These results highlight the importance of considering both geographic and regional factors when studying air quality and finding ways to manage pollution.

@@ -164,83 +164,6 @@ pm <- pm |>
 )
 ```
 
-For our extension of the analysis, we copied the `pm` dataframe into a new dataframe and added a column called `climate_region`. The column value was determined by one of nine climate regions based on the state the monitor is located in. These climate regions are defined as "climatically consistent regions within the contiguous United States which are useful for putting current climate anomalies into a historical perspective" by the National Centers for Environmental Information. [^5]
-
-[^5]: <https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions>
-
-![[U.S. Climate Regions Map (National Centers for Environmental Information)](https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions)](climate_regions.png)
-
-```{r}
-climate_regions <- c(
-  "Connecticut" = "Northeast",
-  "Delaware" = "Northeast",
-  "District Of Columbia" = "Northeast",
-  "Maine" = "Northeast",
-  "Maryland" = "Northeast",
-  "Massachusetts" = "Northeast",
-  "New Hampshire" = "Northeast",
-  "New Jersey" = "Northeast",
-  "New York" = "Northeast",
-  "Pennsylvania" = "Northeast",
-  "Rhode Island" = "Northeast",
-  "Vermont" = "Northeast",
-  "Iowa" = "Upper Midwest",
-  "Michigan" = "Upper Midwest",
-  "Minnesota" = "Upper Midwest",
-  "Wisconsin" = "Upper Midwest",
-  "Illinois" = "Ohio Valley",
-  "Indiana" = "Ohio Valley",
-  "Kentucky" = "Ohio Valley",
-  "Missouri" = "Ohio Valley",
-  "Ohio" = "Ohio Valley",
-  "Tennessee" = "Ohio Valley",
-  "West Virginia" = "Ohio Valley",
-  "Alabama" = "Southeast",
-  "Florida" = "Southeast",
-  "Georgia" = "Southeast",
-  "North Carolina" = "Southeast",
-  "South Carolina" = "Southeast",
-  "Virginia" = "Southeast",
-  "Montana" = "Northern Rockies and Plains",
-  "Nebraska" = "Northern Rockies and Plains",
-  "North Dakota" = "Northern Rockies and Plains",
-  "South Dakota" = "Northern Rockies and Plains",
-  "Wyoming" = "Northern Rockies and Plains",
-  "Arkansas" = "South",
-  "Kansas" = "South",
-  "Louisiana" = "South",
-  "Mississippi" = "South",
-  "Oklahoma" = "South",
-  "Texas" = "South",
-  "Arizona" = "Southwest",
-  "Colorado" = "Southwest",
-  "New Mexico" = "Southwest",
-  "Utah" = "Southwest",
-  "Idaho" = "Northwest",
-  "Oregon" = "Northwest",
-  "Washington" = "Northwest",
-  "California" = "West",
-  "Nevada" = "West"
-)
-
-# Add a new column with region labels
-pm_clim <- pm |>
-  mutate(climate_region = recode(state, !!!climate_regions))
-```
-
-The boxplot below illustrates PM2.5 concentrations across the nine climate regions, showcasing the varying levels of air pollution experienced in each region.
-
-```{r}
-pm_clim |>
-  ggplot(aes(x = climate_region, y = value, fill = climate_region)) + 
-    geom_boxplot() + 
-    theme_classic() + 
-    labs(title = "Distribution of PM2.5 Concentrations by Climate Region", 
-         x = "Climate Region", 
-         y = "Value") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          legend.position = "none")
-```
 
 To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.
 
@@ -525,6 +448,85 @@ test_predictions
 ```
 
 ### Model 2
+
+For our extension of the analysis, we copied the `pm` dataframe into a new dataframe and added a column called `climate_region`. The column value was determined by one of nine climate regions based on the state the monitor is located in. These climate regions are defined as "climatically consistent regions within the contiguous United States which are useful for putting current climate anomalies into a historical perspective" by the National Centers for Environmental Information. [^5]
+
+[^5]: <https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions>
+
+![[U.S. Climate Regions Map (National Centers for Environmental Information)](https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions)](climate_regions.png)
+
+```{r}
+climate_regions <- c(
+  "Connecticut" = "Northeast",
+  "Delaware" = "Northeast",
+  "District Of Columbia" = "Northeast",
+  "Maine" = "Northeast",
+  "Maryland" = "Northeast",
+  "Massachusetts" = "Northeast",
+  "New Hampshire" = "Northeast",
+  "New Jersey" = "Northeast",
+  "New York" = "Northeast",
+  "Pennsylvania" = "Northeast",
+  "Rhode Island" = "Northeast",
+  "Vermont" = "Northeast",
+  "Iowa" = "Upper Midwest",
+  "Michigan" = "Upper Midwest",
+  "Minnesota" = "Upper Midwest",
+  "Wisconsin" = "Upper Midwest",
+  "Illinois" = "Ohio Valley",
+  "Indiana" = "Ohio Valley",
+  "Kentucky" = "Ohio Valley",
+  "Missouri" = "Ohio Valley",
+  "Ohio" = "Ohio Valley",
+  "Tennessee" = "Ohio Valley",
+  "West Virginia" = "Ohio Valley",
+  "Alabama" = "Southeast",
+  "Florida" = "Southeast",
+  "Georgia" = "Southeast",
+  "North Carolina" = "Southeast",
+  "South Carolina" = "Southeast",
+  "Virginia" = "Southeast",
+  "Montana" = "Northern Rockies and Plains",
+  "Nebraska" = "Northern Rockies and Plains",
+  "North Dakota" = "Northern Rockies and Plains",
+  "South Dakota" = "Northern Rockies and Plains",
+  "Wyoming" = "Northern Rockies and Plains",
+  "Arkansas" = "South",
+  "Kansas" = "South",
+  "Louisiana" = "South",
+  "Mississippi" = "South",
+  "Oklahoma" = "South",
+  "Texas" = "South",
+  "Arizona" = "Southwest",
+  "Colorado" = "Southwest",
+  "New Mexico" = "Southwest",
+  "Utah" = "Southwest",
+  "Idaho" = "Northwest",
+  "Oregon" = "Northwest",
+  "Washington" = "Northwest",
+  "California" = "West",
+  "Nevada" = "West"
+)
+
+# Add a new column with region labels
+pm_clim <- pm |>
+  mutate(climate_region = recode(state, !!!climate_regions))
+```
+
+The boxplot below illustrates PM2.5 concentrations across the nine climate regions, showcasing the varying levels of air pollution experienced in each region.
+
+```{r}
+pm_clim |>
+  ggplot(aes(x = climate_region, y = value, fill = climate_region)) + 
+    geom_boxplot() + 
+    theme_classic() + 
+    labs(title = "Distribution of PM2.5 Concentrations by Climate Region", 
+         x = "Climate Region", 
+         y = "Value") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+```
+
 
 To create the second model that includes climate regions as a factor, we used the `pm_clim` dataset. We followed the same steps, except for some changes that are noted.
 

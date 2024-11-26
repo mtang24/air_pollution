@@ -193,8 +193,7 @@ pm_quad %>%
     ))
 ```
 
-The following visualizations show PM2.5 levels based on population density, one visualization is divided by both state and population density. From the box plots you can see that high population density has very consistent PM 2.5 levels as there are no outliers and the pink box is very thin while the low population density has a bigger pink box and several outliers. Through the second visualization you can also see how each state's PM2.5 levels differ.
-
+We were also interested in examining PM2.5 levels based on population density. In the following box plot you can see that high population density has very consistent PM 2.5 levels---there are no outliers and the box is very thin---while the low population density has a greater spread and several outliers. 
 ```{r}
 # Maddy's EDA
 pm_cl <- pm |> 

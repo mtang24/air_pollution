@@ -182,7 +182,14 @@ pm_quad %>%
   labs(title = "Lowest CMAQ Levels in Northwestern Quadrant",
        x = "Quadrant of the U.S.") +
   theme_minimal() +
-  theme(plot.title.position = "plot") 
+  theme(plot.title.position = "plot") +
+  scale_x_discrete(
+    labels = c(
+      "northeast" = "Northeast",
+      "northwest" = "Northwest",
+      "southeast" = "Southeast",
+      "southwest" = "Southwest"
+    ))
 ```
 
 The following visualizations show PM2.5 levels based on population density, one visualization is divided by both state and population density. From the box plots you can see that high population density has very consistent PM 2.5 levels as there are no outliers and the pink box is very thin while the low population density has a bigger pink box and several outliers. Through the second visualization you can also see how each state's PM2.5 levels differ.

@@ -48,7 +48,7 @@ library(GGally)
 
 Our data comes from the US Environmental Protection Agency (EPA), the National Aeronautics and Space Administration (NASA), the US Census, and the National Center for Health Statistics (NCHS).
 
-It contains 48 features (variables) with values for each of the 876 monitors (observations).
+This dataset contains information from air quality monitors placed all throughout the United States, although they are not uniformly distributed. There are 48 features (variables) with values for each of the 876 monitors (each monitor is a row/observation).
 
 ##### The features are:
 

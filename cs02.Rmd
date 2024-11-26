@@ -196,7 +196,8 @@ ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
   geom_boxplot(fill = "pink") +
   labs(title = "PM2.5 Levels by Population Density Clusters",
        x = "Population Density Cluster",
-       y = "PM2.5 Levels")
+       y = "PM2.5 Levels") +
+  theme_minimal()
 
 ```
 

@@ -208,7 +208,7 @@ ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
 
 ```
 
-We brainstormed that another factor that could add another layer of accuracy to predicting air pollution concentrations would be observing whether how urban counties are impact pollution levels. To visualize the potential correlation between urbanicity and emissions, we utilized a correlation matrix plot:
+We also wanted to examine urbanicity and how the level of urbanization is correlated with different pollution levels. To visualize the potential correlation between urbanicity and emissions, we created a correlation matrix plot:
 
 ```{r}
 #Correlation Matrix between Urbancity and Log NEI Emissions

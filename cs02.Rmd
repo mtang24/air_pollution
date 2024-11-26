@@ -317,16 +317,16 @@ vfold_pm
 
 We then defined a preprocessing recipe, `RF_rec`, to prepare the `train_pm` dataset for training a Random Forest model by cleaning and optimizing the features.
 
--   assigning roles:
+-   Assigning roles:
 
     -   `everything()`, i.e., all variables are first assigned the role of "predictor" for model input variables.
     -   `value` was reassigned as the response/outcome variable
     -   `id` was reassigned as the "id variable" to uniquely identify observations
     -   "fips" was reassigned with the role of "county id."
 
--   we used `step_novel("state")` to prepare the model to handle any unseen levels in the state variable during cross validation
+-   We used `step_novel("state")` to prepare the model to handle any unseen levels in the state variable during cross validation
 
--   we converted categorical columns into factors, dropped the unnecessary categorical features, and removed variables that are highly correlated or have near-zero variance
+-   We converted categorical columns into factors, dropped the unnecessary categorical features, and removed variables that are highly correlated or have near-zero variance
 
 ```{r}
 RF_rec <- recipe(train_pm) |>

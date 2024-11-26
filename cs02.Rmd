@@ -52,60 +52,60 @@ This dataset contains information from air quality monitors placed all throughou
 
 ##### The features are:
 
--   **id** \| Monitor number
+-   `id` \| Monitor number
     -   The county number is indicated before the decimal and the monitor number is indicated after the decimal\
     -   Example: 1073.0023 is Jefferson county (1073) and .0023 one of 8 monitors
--   **fips** \| Federal information processing standard number for the county where the monitor is located
+-   `fips` \| Federal information processing standard number for the county where the monitor is located
     -   5 digit id code for counties (zero is often the first value and sometimes is not shown)
     -   First two numbers indicate the state, last three numbers indicate the county
     -   Example: Alabama’s state code is 01 because it is first alphabetically
     -   Note: Alaska and Hawaii are not included because they are not part of the contiguous US
--   **Lat** \| Latitude of the monitor in degrees
--   **Lon** \| Longitude of the monitor in degrees
--   **state** \| State where the monitor is located
--   **county** \| County where the monitor is located
--   **city** \| City where the monitor is located
--   **CMAQ** \| Estimated values of air pollution from a computational model called [Community Multiscale Air Quality (CMAQ)](https://www.epa.gov/cmaq)
+-   `Lat` \| Latitude of the monitor in degrees
+-   `Lon` \| Longitude of the monitor in degrees
+-   `state` \| State where the monitor is located
+-   `county` \| County where the monitor is located
+-   `city` \| City where the monitor is located
+-   `CMAQ` \| Estimated values of air pollution from a computational model called [Community Multiscale Air Quality (CMAQ)](https://www.epa.gov/cmaq)
     -   A monitoring system that simulates the physics of the atmosphere using chemistry and weather data to predict the air pollution
     -   Data from EPA
--   **zcta** \| [Zip Code Tabulation Area](https://en.wikipedia.org/wiki/ZIP_Code_Tabulation_Area) where the monitor is located
+-   `zcta` \| [Zip Code Tabulation Area](https://en.wikipedia.org/wiki/ZIP_Code_Tabulation_Area) where the monitor is located
     -   Postal Zip codes are converted into “generalized areal representations” that are non-overlapping
     -   Data from the 2010 Census
--   **zcta_area** \| Land area of the zip code area in meters squared
+-   `zcta_area` \| Land area of the zip code area in meters squared
     -   Data from the 2010 Census
--   **zcta_pop** \| Population in the zip code area
+-   `zcta_pop` \| Population in the zip code area
     -   Data from the 2010 Census
--   **imp_a500, imp_a1000, imp_a5000, imp_a10000, imp_a15000** \| Impervious surface measure
+-   `imp_a500, imp_a1000, imp_a5000, imp_a10000, imp_a15000` \| Impervious surface measure
     -   Impervious surface are roads, concrete, parking lots, buildings
     -   Measured within a circle with a radius of 500, 1000, 5000, 10000, and 15000 meters respectively around the monitor
--   **county_area** \| Land area of the county of the monitor in meters squared
--   **county_pop** \| Population of the county of the monitor
--   **Log_dist_to_prisec** \| Log (Natural log) distance to a primary or secondary road from the monitor
+-   `county_area` \| Land area of the county of the monitor in meters squared
+-   `county_pop` \| Population of the county of the monitor
+-   `Log_dist_to_prisec` \| Log (Natural log) distance to a primary or secondary road from the monitor
     -   Highway or major road
--   **log_pri_5000m, log_pri_10000m, log_pri_15000m, log_pri_25000m** \| Count of primary road length in meters in a circle with a radius of 5000, 10000, 15000, and 25000 meters respectively around the monitor (Natural log)
+-   `log_pri_5000m, log_pri_10000m, log_pri_15000m, log_pri_25000m` \| Count of primary road length in meters in a circle with a radius of 5000, 10000, 15000, and 25000 meters respectively around the monitor (Natural log)
     -   Highways only
--   **log_prisec_500m, log_prisec_1000m, log_prisec_5000m, log_prisec_10000m, log_prisec_15000m, log_prisec_25000m** \| Count of primary and secondary road length in meters in a circle with a radius of 500, 1000, 5000, 10000, 15000, 25000 meters around the monitor (Natural log)
+-   `log_prisec_500m, log_prisec_1000m, log_prisec_5000m, log_prisec_10000m, log_prisec_15000m, log_prisec_25000m` \| Count of primary and secondary road length in meters in a circle with a radius of 500, 1000, 5000, 10000, 15000, 25000 meters around the monitor (Natural log)
     -   Highway and secondary roads
--   **log_nei_pm25_10000m, log_nei_pm25_15000m, log_nei_pm25_25000m** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
+-   `log_nei_pm25_10000m, log_nei_pm25_15000m, log_nei_pm25_25000m` \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
     -   Fine Particulate Matter (diameter 2.5 µm)
--   **log_nei_pm10_10000m, log_nei_pm10_15000m, log_nei_pm10_25000m** \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
+-   `log_nei_pm10_10000m, log_nei_pm10_15000m, log_nei_pm10_25000m` \| Tons of emissions from major sources data base (annual data) sum of all sources within a circle with a radius of 10000, 15000, 25000 meters of distance respectively around the monitor (Natural log)
     -   Large Coarse Particulate Matter (diameter 10 µm)
--   **popdens_county** \| Population density (number of people per kilometer squared area of the county)
--   **popdens_zcta** \| Population density (number of people per kilometer squared area of zcta)
+-   `popdens_county` \| Population density (number of people per kilometer squared area of the county)
+-   `popdens_zcta` \| Population density (number of people per kilometer squared area of zcta)
 -   From the Census:
-    -   **no_hs** \| Percentage of people in zcta area where the monitor is that do not have a high school degree
-    -   **some_hs** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
-    -   **hs_grad** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree
-    -   **some_college** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
-    -   **associate** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing an associate degree
-    -   **bachelor** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a bachelor’s degree
-    -   **grad** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a graduate degree
-    -   **poverty** \| Percentage of people in zcta area where the monitor is that lived in [poverty](https://aspe.hhs.gov/2008-hhs-poverty-guidelines) in 2008
--   **hs_or_less** \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of no_hs, some_hs, and hs_grad)
--   **urc2013, urc2006** \| [2013](https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf), [2006 Urban-rural classification](https://www.cdc.gov/nchs/data/series/sr_02/sr02_154.pdf) of the county where the monitor is located
+    -   `no_hs` \| Percentage of people in zcta area where the monitor is that do not have a high school degree
+    -   `some_hs` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was some high school education
+    -   `hs_grad` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing a high school degree
+    -   `some_college` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing some college education
+    -   `associate` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was completing an associate degree
+    -   `bachelor` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a bachelor’s degree
+    -   `grad` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a graduate degree
+    -   `poverty` \| Percentage of people in zcta area where the monitor is that lived in [poverty](https://aspe.hhs.gov/2008-hhs-poverty-guidelines) in 2008
+-   `hs_or_less` \| Percentage of people in zcta area where the monitor whose highest formal educational attainment was a high school degree or less (sum of no_hs, some_hs, and hs_grad)
+-   `urc2013, urc2006` \| [2013](https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf), [2006 Urban-rural classification](https://www.cdc.gov/nchs/data/series/sr_02/sr02_154.pdf) of the county where the monitor is located
     -   6 category variable - 1 is totally urban 6 is completely rural
     -   Data from the [National Center for Health Statistics](https://www.cdc.gov/nchs/index.htm)
--   **aod** \| Aerosol Optical Depth measurement from a NASA satellite
+-   `aod` \| Aerosol Optical Depth measurement from a NASA satellite
     -   Based on the diffraction of a laser
     -   Used as a proxy of particulate pollution
     -   Unit-less - higher value indicates more pollution

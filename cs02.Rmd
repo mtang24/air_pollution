@@ -165,7 +165,7 @@ pm <- pm |>
 ```
 
 
-To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.
+To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these quadrants. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.
 
 ```{r}
 # Creating a new column based on the quadrant of the US the monitor is in

@@ -195,7 +195,6 @@ pm_quad %>%
 
 We were also interested in examining PM2.5 levels based on population density. In the following box plot you can see that high population density has very consistent PM 2.5 levels---there are no outliers and the box is very thin---while the low population density has a greater spread and several outliers. 
 ```{r}
-# Maddy's EDA
 pm_cl <- pm |> 
   mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
@@ -687,8 +686,8 @@ test_predictions
 
 ## Results & Discussion
 
-Our extension of our analysis demonstrated that we can successfully improve model predictions by including the different climate regions of the U.S. as a model predictor.
+Our extension of our analysis demonstrated that we can successfully improve model predictions by including the different climate regions of the U.S. as a model predictor. Our model's predictors of annual air pollution levels explained 61.9% of the variance in our outcome variable (PM2.5 levels). When we included information about climate regions, the amount of variance explained increased to 62.6%, suggesting that climate regions play a role in understanding air pollution. Our analysis of the data also revealed that the variable "state" was the most important factor, showing how much location affects pollution levels. 
 
 ## Conclusion
 
-In conclusion, our research showed that we could predict annual air pollution levels with 61.9% accuracy. When we included information about climate regions, the accuracy improved slightly to 62.6%, suggesting that climate factors play a role in understanding air pollution. Our analysis of the data also revealed that the variable "state" was the most important factor, showing how much location affects pollution levels. These results highlight the importance of considering both geographic and regional factors when studying air quality and finding ways to manage pollution.
+We were able to predict PM2.5 levels with 61.9% accuracy with our initial model. After adding a new variable created based on the climate regions in which each monitor was located, our accuracy improved from 61.9% to 62.6%. Overall, our results highlight the importance of considering both geographic and regional factors when studying air quality and finding ways to manage pollution.

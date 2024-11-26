@@ -178,7 +178,7 @@ pm_quad <- pm |>
   ))
 pm_quad %>% 
   ggplot(aes(y = CMAQ, x = quadrant)) +
-  geom_boxplot() +
+  geom_boxplot(fill = "coral") +
   labs(title = "Lowest CMAQ Levels in Northwestern Quadrant",
        subtitle = "CMAQ levels per quadrant of the United States",
        x = "Quadrant of the U.S.") +
@@ -200,7 +200,7 @@ pm_cl <- pm |>
   mutate(pop_density_cluster = cut(popdens_county, breaks = 3, labels = c("Low", "Medium", "High")))
 
 ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
-  geom_boxplot(fill = "pink") +
+  geom_boxplot(fill = "coral") +
   labs(title = "PM2.5 Levels Most Widely Distributed in the Low Population Density Cluster",
        x = "Population Density Cluster",
        y = "PM2.5 Levels") +
@@ -252,7 +252,7 @@ facet_labels <- list(
 
 #Faceted Boxplots for both urbanicity years and emission levels
 ggplot(pm_long_urc, aes(x = urbanicity, y = emissions)) +
-  geom_boxplot(aes(color = factor(urbanicity))) +
+  geom_boxplot(aes(fill = factor(urbanicity))) +
   labs(x = "Urbanicity (1 = Most Urban, 6 = Most Rural)", y = "Log NEI Emissions",
        title = "PM2.5 Levels by Urban-Rural Classifications",
     subtitle = "Log NEI Emissions from Major Sources within 10,000m, 15,000m, and 25,000m Radii\nfor 2006 and 2013 Urban-Rural Classifications") +
@@ -260,14 +260,15 @@ ggplot(pm_long_urc, aes(x = urbanicity, y = emissions)) +
              labeller = labeller(urc_year = as_labeller(facet_labels$urc_year),
                                             log_nei = as_labeller(facet_labels$log_nei))) +
   scale_x_continuous(breaks = 1:6) +
-    scale_colour_manual(values = blue_gradient) +
+    #scale_colour_manual(values = blue_gradient) +
   guides(color = "none") +
   theme_minimal() +
   theme(
     strip.text.x = element_text(size = 10, hjust = 0.5),
     axis.text.x = element_text(size = 8),
     plot.title = element_text(size = 15, face = "bold"), 
-    plot.subtitle = element_text(size = 12))
+    plot.subtitle = element_text(size = 12),
+    legend.position = "none")
 
 ```
 

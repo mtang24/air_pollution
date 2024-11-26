@@ -13,14 +13,17 @@ output:
 
 ## Introduction
 
-Air pollution is a pressing environmental issue, with various types of pollutants affecting air quality. Among these, fine particulate matter (PM2.5)—particles smaller than 2.5 µm in diameter—is particularly harmful [^1]. Exposure to PM2.5 is linked to severe health problems, and some regions in the United States experience pollution levels that exceed the World Health Organization's recommended limits [^2] [^3]. 
+Air pollution is a pressing environmental issue, with various types of pollutants affecting air quality. Among these, fine particulate matter (PM2.5)—particles smaller than 2.5 µm in diameter—is particularly harmful [^1]. Exposure to PM2.5 is linked to severe health problems, and some regions in the United States experience pollution levels that exceed the World Health Organization's recommended limits [^2] [^3].
+
+[^1]: <https://www.epa.gov/pm-pollution/particulate-matter-pm-basics>
+
+[^2]: <https://www.epa.gov/pm-pollution/particulate-matter-pm-basics>
+
+[^3]: <https://www.stateofglobalair.org/sites/default/files/soga_2019_fact_sheet.pdf>
 
 Accurately predicting annual average air pollution concentrations in the U.S. has significant benefits, such as informing public health initiatives and guiding policy decisions. While traditional air pollution measurement methods provide valuable data, their uneven distribution nationwide and limited coverage of PM2.5 levels create gaps in understanding [^4]. To address this problem, we use machine learning to develop a model aimed at improving the accuracy of air pollution predictions. This model also incorporates climate region as a factor to account for geographic variability, seeking to enhance prediction accuracy, especially in regions with sparse monitor coverage.
 
-[^1]: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
-[^2]: https://www.epa.gov/pm-pollution/particulate-matter-pm-basics
-[^3]: https://www.stateofglobalair.org/sites/default/files/soga_2019_fact_sheet.pdf
-[^4]: https://ehjournal.biomedcentral.com/articles/10.1186/1476-069X-13-63
+[^4]: <https://ehjournal.biomedcentral.com/articles/10.1186/1476-069X-13-63>
 
 ```{r setup, include=FALSE}
 # control global Rmd chunk settings
@@ -161,11 +164,11 @@ pm <- pm |>
 )
 ```
 
-After importing our data, we added an additional column called `climate_region` that assigns one of nine climate regions based on the state the monitor is located in. These climate regions are defined as "climatically consistent regions within the contiguous United States which are useful for putting current climate anomalies into a historical perspective" by the National Centers for Environmental Information [^5]. 
+After importing our data, we added an additional column called `climate_region` that assigns one of nine climate regions based on the state the monitor is located in. These climate regions are defined as "climatically consistent regions within the contiguous United States which are useful for putting current climate anomalies into a historical perspective" by the National Centers for Environmental Information [^5].
+
+[^5]: <https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions>
 
 ![[U.S. Climate Regions Map (National Centers for Environmental Information)](https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions)](climate_regions.png)
-
-[^5]: https://www.ncei.noaa.gov/access/monitoring/reference-maps/us-climate-regions
 
 ```{r}
 climate_regions <- c(
@@ -239,7 +242,7 @@ pm_clim |>
           legend.position = "none")
 ```
 
-To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.  
+To examine the data, we decided to split the monitors into four quadrants according to the latitude and longitude lines that bisect the U.S. and compare CMAQ levels across these new conditions. We found that the northwestern quadrant had much lower CMAQ levels than the other three quadrants.
 
 ```{r}
 # Creating a new column based on the quadrant of the US the monitor is in
@@ -259,7 +262,7 @@ pm_quad %>%
   theme(plot.title.position = "plot") 
 ```
 
-The following visualizations show PM2.5 levels based on population density, one visualization is divided by both state and population density. From the box plots you can see that high population density has very consistent PM 2.5 levels as there are no outliers and the pink box is very thin while the low population density has a bigger pink box and several outliers. Through the second visualization you can also see how each state's PM2.5 levels differ. 
+The following visualizations show PM2.5 levels based on population density, one visualization is divided by both state and population density. From the box plots you can see that high population density has very consistent PM 2.5 levels as there are no outliers and the pink box is very thin while the low population density has a bigger pink box and several outliers. Through the second visualization you can also see how each state's PM2.5 levels differ.
 
 ```{r}
 # Maddy's EDA
@@ -274,9 +277,7 @@ ggplot(pm_cl, aes(x = pop_density_cluster, y = value)) +
 
 ```
 
-
-We brainstormed that another factor that could add another layer of accuracy to predicting air pollution concentrations would be observing whether how urban counties are impact pollution levels. To visualize the potential correlation between urbanicity and emissions, we utilized a correlation matrix plot:  
-
+We brainstormed that another factor that could add another layer of accuracy to predicting air pollution concentrations would be observing whether how urban counties are impact pollution levels. To visualize the potential correlation between urbanicity and emissions, we utilized a correlation matrix plot:
 
 ```{r}
 #Correlation Matrix between Urbancity and Log NEI Emissions
@@ -296,8 +297,7 @@ ggcorr(select(pm, matches("nei|urc")),
 
 The shaded blue areas highlight a negative correlation between the urbanicity (urc) and log NEI emissions (log_nei). The negative correlation means that as urbanicity decreases (from urban to rural), emission levels tend to decrease as well. This finding is expected given that urban environments are typically more industrialized, densely populated, and often have higher vehicle traffic—all contributing to elevated pollution levels.
 
-
-Since there seems to be a correlation between urbanicity and emission levels, we employed sets of boxplots to examine the data more closely. As a reminder, the urbanicity measure spans 6 categorical values with 1 most urban and 6 being rural. 
+Since there seems to be a correlation between urbanicity and emission levels, we employed sets of boxplots to examine the data more closely. As a reminder, the urbanicity measure spans 6 categorical values with 1 most urban and 6 being rural.
 
 ```{r}
 #Reshaped Log NEI Emission and Urbanicity values to long format for easier faceting
@@ -342,8 +342,6 @@ ggplot(pm_long_urc, aes(x = urbanicity, y = emissions)) +
 
 From these boxplots, we observe a clear decrease in average emissions as urbanicity levels decrease (from urban to rural), further reinforcing the idea that urban counties contribute more significantly to pollution.
 
-
-
 ## Analysis
 
 ### Model 1
@@ -387,16 +385,16 @@ vfold_pm
 
 We then defined a preprocessing recipe, `RF_rec`, to prepare the `train_pm` dataset for training a Random Forest model by cleaning and optimizing the features.
 
-- assigning roles:
-  - `everything()`, i.e., all variables are first assigned the role of "predictor" for model input variables.
-  - `value` was reassigned as the response/outcome variable
-  - `id` was reassigned as the "id variable" to uniquely identify observations
-  - "fips" was reassigned with the role of "county id."
+-   assigning roles:
 
-- we used `step_novel("state")` to prepare the model to handle any unseen levels in the state variable during cross validation
+    -   `everything()`, i.e., all variables are first assigned the role of "predictor" for model input variables.
+    -   `value` was reassigned as the response/outcome variable
+    -   `id` was reassigned as the "id variable" to uniquely identify observations
+    -   "fips" was reassigned with the role of "county id."
 
-- we converted categorical columns into factors, dropped the unnecessary categorical features, and removed variables that are highly correlated or have near-zero variance
+-   we used `step_novel("state")` to prepare the model to handle any unseen levels in the state variable during cross validation
 
+-   we converted categorical columns into factors, dropped the unnecessary categorical features, and removed variables that are highly correlated or have near-zero variance
 
 ```{r}
 RF_rec <- recipe(train_pm) |>
@@ -438,7 +436,7 @@ RF_wflow_fit <- parsnip::fit(RF_wflow, data = train_pm)
 RF_wflow_fit
 ```
 
-We generated a variable importance plot for the fitted Random Forest model. 
+We generated a variable importance plot for the fitted Random Forest model.
 
 ```{r}
 RF_wflow_fit |> 
@@ -507,7 +505,7 @@ tuned_RF_values <- select_best(tune_RF_results,  metric = "rmse")
 tuned_RF_values
 ```
 
-We finalized the Random Forest workflow by applying the best hyperparameters identified through grid search. The model was then trained and evaluated on both the training and test datasets using the last_fit() function. Finally, performance metrics such as R^2 and RMSE are collected.
+We finalized the Random Forest workflow by applying the best hyperparameters identified through grid search. The model was then trained and evaluated on both the training and test datasets using the last_fit() function. Finally, performance metrics such as R\^2 and RMSE are collected.
 
 ```{r}
 # specify best combination from tune in workflow
@@ -611,7 +609,7 @@ resample_RF_fit <- tune::fit_resamples(RF_wflow, vfold_pm)
 collect_metrics(resample_RF_fit)
 ```
 
-We now see a slightly improved R^2 value.
+We now see a slightly improved R\^2 value.
 
 ```{r}
 tune_RF_model <- rand_forest(mtry = tune(), min_n = tune()) |>
@@ -668,19 +666,14 @@ overallfit <- RF_wflow |>
 collect_metrics(overallfit)
 ```
 
-We now see a slightly improved R^2 value on the test data.
+We now see a slightly improved R\^2 value on the test data.
 
 ```{r}
 test_predictions <- collect_predictions(overallfit)
 test_predictions
 ```
 
-In using a random forest to find the best model for predicting air quality from our data:
-- Multiple decision trees are created
-- Each tree is built using a random subset of the training data with replacement
-- The randomness helps to keep the algorithm from overfitting the data
-- The mean of the predictions from each of the trees is used in the final output
-
+In using a random forest to find the best model for predicting air quality from our data: - Multiple decision trees are created - Each tree is built using a random subset of the training data with replacement - The randomness helps to keep the algorithm from overfitting the data - The mean of the predictions from each of the trees is used in the final output
 
 ```{r}
 #split
@@ -733,4 +726,4 @@ RF_wflow_fit |>
 
 ## Conclusion
 
-In conclusion, we successfully predicted the annual concentration of air pollution with an accuracy of 61.9%. When factoring in climate regions, our model achieved even higher accuracy, reaching approximately 62.6%. This could show that regional climate factors are influential in understanding air pollution patterns. Analyzing feature importance reveals that the variable “state” holds the highest significance, highlighting its critical role in determining pollution levels. This suggests that geographic factors are critical in determining our air quality…
+In conclusion, our research showed that we could predict annual air pollution levels with 61.9% accuracy. When we included information about climate regions, the accuracy improved slightly to 62.6%, suggesting that climate factors play a role in understanding air pollution. Our analysis of the data also revealed that the varaible "state" was the most important factor, showing how much location affects pollution levels. These results highlight the importance of considering both geographic and regional factors when studying air quality and finding ways to manage pollution.

@@ -119,7 +119,7 @@ pm <- read_csv("data/pm25_data.csv")
 
 ### Data Wrangling and EDA
 
-To preface, we renamed certain lengthy variables for ease of viewing and consistency:
+To start, we renamed certain lengthy variables for ease of viewing and consistency:
 
 ```{r}
 pm <- pm |>

@@ -13,7 +13,7 @@ output:
 
 ## Introduction
 
-Air pollution is a pressing environmental issue, with various types of pollutants affecting air quality. Among these, fine particulate matter (PM2.5)—particles smaller than 2.5 µm in diameter—is particularly harmful [^1]. Exposure to PM2.5 is linked to severe health problems, and some regions in the United States experience pollution levels that exceed the World Health Organization's recommended limits [^2] [^3].
+Air pollution is a pressing environmental issue, with various types of pollutants affecting air quality. Among these, fine particulate matter (PM2.5)—particles smaller than 2.5 µm in diameter—is particularly harmful. [^1] Exposure to PM2.5 is linked to severe health problems, and some regions in the United States experience pollution levels that exceed the World Health Organization's recommended limits. [^2] [^3]
 
 [^1]: <https://www.epa.gov/pm-pollution/particulate-matter-pm-basics>
 
@@ -21,7 +21,7 @@ Air pollution is a pressing environmental issue, with various types of pollutant
 
 [^3]: <https://www.stateofglobalair.org/sites/default/files/soga_2019_fact_sheet.pdf>
 
-Accurately predicting annual average air pollution concentrations in the U.S. has significant benefits, such as informing public health initiatives and guiding policy decisions. While traditional air pollution measurement methods provide valuable data, their uneven distribution nationwide and limited coverage of PM2.5 levels create gaps in understanding [^4]. To address this problem, we use machine learning to develop a model aimed at improving the accuracy of air pollution predictions. This model also incorporates climate region as a factor to account for geographic variability, seeking to enhance prediction accuracy, especially in regions with sparse monitor coverage.
+Accurately predicting annual average air pollution concentrations in the U.S. has significant benefits, such as informing public health initiatives and guiding policy decisions. While traditional air pollution measurement methods provide valuable data, their uneven distribution nationwide and limited coverage of PM2.5 levels create gaps in understanding. [^4] To address this problem, we use machine learning to develop a model aimed at improving the accuracy of air pollution predictions. This model also incorporates climate region as a factor to account for geographic variability, seeking to enhance prediction accuracy, especially in regions with sparse monitor coverage.
 
 [^4]: <https://ehjournal.biomedcentral.com/articles/10.1186/1476-069X-13-63>
 
